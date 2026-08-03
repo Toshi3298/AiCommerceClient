@@ -10,6 +10,7 @@ import { StoreLogin } from './app/pages/store-auth/login/login';
 import { StoreRegister } from './app/pages/store-auth/register/register';
 import { Cart } from './app/pages/cart/cart';
 import { authGuard } from './app/core/guards/auth.guard';
+import { Products } from './app/pages/products/products';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -19,6 +20,7 @@ export const appRoutes: Routes = [
         children: [
             { path: 'login', component: StoreLogin },
             { path: 'register', component: StoreRegister },
+            { path: 'products', component: Products },
             { path: 'cart', component: Cart, canActivate: [authGuard] }
         ]
     },

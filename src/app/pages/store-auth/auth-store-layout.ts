@@ -28,7 +28,8 @@ export class AuthStoreLayout implements OnInit {
     );
 
     ngOnInit(): void {
-        if (!this.currentUrl().startsWith('/cart') || !this.authService.hasToken()) return;
+        const isStorePage = this.currentUrl().startsWith('/cart') || this.currentUrl().startsWith('/products');
+        if (!isStorePage || !this.authService.hasToken()) return;
 
         this.authService.getCurrentUser().subscribe({
             next: (response) => {

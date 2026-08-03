@@ -1,0 +1,40 @@
+<section class="products-page">
+    <div class="products-container">
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right"></i><span>Ürünler</span></nav>
+        <div class="page-intro"><div><span class="section-kicker">Koleksiyonumuz</span><h1>Tüm Ürünler</h1><p>Aradığınız ürünü filtreleyin, karşılaştırın ve güvenle sepetinize ekleyin.</p></div></div>
+
+        <form class="filter-panel" [formGroup]="filterForm" (ngSubmit)="applyFilters()" novalidate>
+            <div class="field search-field"><label for="product-search">Genel arama</label><div class="input-icon"><i class="pi pi-search"></i><input pInputText id="product-search" formControlName="search" placeholder="Ürün adı veya açıklama" /></div></div>
+            <div class="field"><label for="brand">Marka</label><input pInputText id="brand" formControlName="brand" placeholder="Örn. Apple" /></div>
+            <div class="field"><label for="category">Kategori</label><select id="category" formControlName="categoryId" [disabled]="isCategoriesLoading()"><option [ngValue]="null">{{ isCategoriesLoading() ? 'Kategoriler yükleniyor...' : 'Tüm Kategoriler' }}</option>@for (category of categories(); track category.id) { <option [ngValue]="category.id">{{ category.name }}</option> }</select>@if (categoryError()) { <small class="field-error">{{ categoryError() }}</small> }</div>
+            <div class="field"><label for="min-price">Minimum fiyat</label><input pInputText id="min-price" type="number" min="0" formControlName="minPrice" placeholder="₺0" /></div>
+            <div class="field"><label for="max-price">Maksimum fiyat</label><input pInputText id="max-price" type="number" min="0" formControlName="maxPrice" placeholder="₺100.000" /></div>
+            <div class="field"><label for="stock-filter">Stok durumu</label><select id="stock-filter" formControlName="inStock"><option value="all">Tümü</option><option value="true">Stokta olanlar</option><option value="false">Tükenenler</option></select></div>
+            <div class="field"><label for="sort">Sıralama</label><select id="sort" formControlName="sort">@for (option of sortOptions; track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select></div>
+            <div class="field"><label for="page-size">Sayfa boyutu</label><select id="page-size" formControlName="pageSize" (change)="pageSizeChanged()"><option [ngValue]="10">10</option><option [ngValue]="20">20</option><option [ngValue]="30">30</option></select></div>
+            <div class="filter-actions"><button pButton type="submit" label="Filtrele" icon="pi pi-filter" [loading]="isLoading()" [disabled]="isLoading()"></button><button pButton type="button" label="Filtreleri Temizle" icon="pi pi-refresh" severity="secondary" [outlined]="true" (click)="resetFilters()" [disabled]="isLoading()"></button></div>
+        </form>
+
+        <div id="product-results" class="results-anchor">
+            @if (apiErrors().length) { <div class="message error-message" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of apiErrors(); track $index) { <p>{{ error }}</p> }</div></div> }
+            @if (successMessage()) { <div class="message success-message" role="status"><i class="pi pi-check-circle"></i><p>{{ successMessage() }}</p></div> }
+
+            @if (isLoading()) {
+                <div class="state-panel"><p-progress-spinner ariaLabel="Ürünler yükleniyor" strokeWidth="4" /><h2>Ürünler yükleniyor</h2><p>Size uygun ürünleri hazırlıyoruz.</p></div>
+            } @else if (!result()?.items?.length) {
+                <div class="state-panel"><div class="empty-icon"><i class="pi pi-search"></i></div><h2>Filtreye uygun ürün bulunamadı</h2><p>Filtrelerinizi değiştirerek tekrar deneyebilirsiniz.</p><button pButton type="button" label="Filtreleri Temizle" severity="secondary" (click)="resetFilters()"></button></div>
+            } @else if (result(); as productResult) {
+                <div class="results-meta"><p><strong>{{ productResult.totalCount }}</strong> ürün bulundu</p><span>Sayfa {{ productResult.pageNumber }} / {{ productResult.totalPages }}</span></div>
+                <div class="product-grid">
+                    @for (product of productResult.items; track product.id) {
+                        <article class="product-card" [class.unavailable]="product.stock === 0 || !product.isActive">
+                            <div class="product-visual"><i class="pi pi-image"></i><span>{{ product.categoryName }}</span>@if (product.stock === 0) { <b>Tükendi</b> } @else if (!product.isActive) { <b>Satışa Kapalı</b> }</div>
+                            <div class="product-content"><div class="brand">{{ product.brand }}</div><h2>{{ product.name }}</h2><p>{{ product.description }}</p><div class="product-info"><span><i class="pi pi-tag"></i>{{ product.categoryName }}</span><span [class.low-stock]="product.stock > 0 && product.stock <= 5"><i class="pi pi-box"></i>{{ product.stock > 0 ? product.stock + ' adet stokta' : 'Stok yok' }}</span></div><div class="product-bottom"><strong>{{ product.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong><button pButton type="button" label="Sepete Ekle" icon="pi pi-shopping-cart" (click)="addToCart(product)" [loading]="isAdding(product.id)" [disabled]="isAdding(product.id) || product.stock === 0 || !product.isActive"></button></div></div>
+                        </article>
+                    }
+                </div>
+                @if (productResult.totalPages > 1) { <nav class="pagination" aria-label="Ürün sayfaları"><button type="button" (click)="changePage(productResult.pageNumber - 1)" [disabled]="productResult.pageNumber <= 1 || isLoading()"><i class="pi pi-angle-left"></i><span>Önceki</span></button>@for (page of pageNumbers(); track page) { <button type="button" class="page-number" [class.active]="page === productResult.pageNumber" (click)="changePage(page)" [disabled]="isLoading()" [attr.aria-current]="page === productResult.pageNumber ? 'page' : null">{{ page }}</button> }<button type="button" (click)="changePage(productResult.pageNumber + 1)" [disabled]="productResult.pageNumber >= productResult.totalPages || isLoading()"><span>Sonraki</span><i class="pi pi-angle-right"></i></button></nav> }
+            }
+        </div>
+    </div>
+</section>
