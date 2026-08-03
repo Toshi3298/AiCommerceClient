@@ -1,0 +1,30 @@
+<section class="cart-page">
+    <div class="cart-container">
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right"></i><span>Sepet</span></nav>
+        <div class="cart-title"><div><span class="section-kicker">Alışveriş Sepeti</span><h1>Sepetiniz</h1></div>@if (cart()?.items?.length) { <button type="button" class="clear-button" (click)="clearCart()" [disabled]="isClearing() || busyItemIds().size > 0"><i class="pi" [class.pi-trash]="!isClearing()" [class.pi-spin]="isClearing()" [class.pi-spinner]="isClearing()"></i>{{ isClearing() ? 'Temizleniyor' : 'Sepeti Temizle' }}</button> }</div>
+
+        @if (apiErrors().length) { <div class="api-error" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of apiErrors(); track $index) { <p>{{ error }}</p> }</div></div> }
+
+        @if (isLoading()) {
+            <div class="state-panel"><p-progress-spinner ariaLabel="Sepet yükleniyor" strokeWidth="4" /><h2>Sepetiniz yükleniyor</h2><p>Ürünleriniz hazırlanıyor, lütfen bekleyin.</p></div>
+        } @else if (!cart()?.items?.length) {
+            <div class="state-panel empty-state"><div class="empty-icon"><i class="pi pi-shopping-cart"></i></div><h2>Sepetiniz henüz boş</h2><p>Beğendiğiniz ürünleri keşfedin ve sepetinize ekleyin.</p><a pButton routerLink="/" label="Alışverişe Başla"></a></div>
+        } @else if (cart(); as currentCart) {
+            <div class="cart-table" role="table" aria-label="Sepet ürünleri">
+                <div class="table-head" role="row"><span>Ürün</span><span>Birim Fiyat</span><span>Miktar</span><span>Satır Toplamı</span><span></span></div>
+                @for (item of currentCart.items; track item.cartItemId) {
+                    <article class="cart-row" role="row" [class.inactive]="!item.isActive">
+                        <div class="product-cell"><div class="product-thumb"><img src="/demo/images/product/product-placeholder.svg" alt="" /></div><div><h2>{{ item.productName }}</h2><small>Ürün No: {{ item.productId }}</small>@if (!item.isActive) { <span class="stock-warning">Satışa kapalı</span> }</div></div>
+                        <div class="price-cell" data-label="Birim Fiyat">{{ item.unitPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</div>
+                        <div class="quantity-cell" data-label="Miktar"><button type="button" (click)="decrease(item)" [disabled]="isItemBusy(item.cartItemId) || isClearing()" aria-label="Miktarı azalt"><i class="pi pi-minus"></i></button><span>@if (isItemBusy(item.cartItemId)) { <i class="pi pi-spinner pi-spin"></i> } @else { {{ item.quantity }} }</span><button type="button" (click)="increase(item)" [disabled]="isItemBusy(item.cartItemId) || isClearing() || item.quantity >= item.availableStock" aria-label="Miktarı artır"><i class="pi pi-plus"></i></button><small>Stok: {{ item.availableStock }}</small></div>
+                        <strong class="total-cell" data-label="Toplam">{{ item.lineTotal | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong>
+                        <button type="button" class="remove-button" (click)="remove(item)" [disabled]="isItemBusy(item.cartItemId) || isClearing()" aria-label="Ürünü kaldır"><i class="pi pi-times"></i></button>
+                    </article>
+                }
+            </div>
+
+            <div class="cart-actions"><a routerLink="/" class="continue-button"><i class="pi pi-arrow-left"></i>Alışverişe Devam Et</a></div>
+            <div class="summary-wrap"><aside class="cart-summary"><h2>Sepet Toplamı</h2><div><span>Toplam Ürün</span><strong>{{ currentCart.totalQuantity }}</strong></div><div><span>Ara Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><div><span>Kargo</span><strong class="free">Ücretsiz</strong></div><div class="grand-total"><span>Genel Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><button pButton type="button" class="checkout-button" label="Siparişi Tamamla"></button><small>Ödeme adımı yakında kullanıma açılacaktır.</small></aside></div>
+        }
+    </div>
+</section>

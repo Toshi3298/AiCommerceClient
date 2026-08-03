@@ -12,7 +12,10 @@
                 <a routerLink="/">Ana Sayfa</a>
                 <a routerLink="/" fragment="contact">İletişim</a>
                 <a routerLink="/" fragment="about">Hakkımızda</a>
-                @if (currentUrl() === '/register') {
+                @if (currentUser(); as user) {
+                    <span class="user-name"><i class="pi pi-user"></i>{{ user.fullName }}</span>
+                    <button type="button" class="logout-button" (click)="logout()">Çıkış Yap</button>
+                } @else if (currentUrl() === '/register') {
                     <a routerLink="/login">Giriş Yap</a>
                 } @else {
                     <a routerLink="/register">Kayıt Ol</a>
@@ -21,15 +24,20 @@
             <div class="header-actions">
                 <label class="search"><input type="search" placeholder="Ne aramıştınız?" /><i class="pi pi-search"></i></label>
                 <button type="button" class="icon-button" aria-label="Favoriler"><i class="pi pi-heart"></i></button>
-                <button type="button" class="icon-button" aria-label="Sepet"><i class="pi pi-shopping-cart"></i></button>
+                <a routerLink="/cart" class="icon-button" aria-label="Sepet"><i class="pi pi-shopping-cart"></i></a>
                 <button type="button" class="menu-button" (click)="toggleMenu()" aria-label="Menü"><i class="pi" [class.pi-bars]="!menuOpen()" [class.pi-times]="menuOpen()"></i></button>
             </div>
         </div>
         @if (menuOpen()) {
             <nav class="mobile-nav" aria-label="Mobil navigasyon">
                 <a routerLink="/" (click)="toggleMenu()">Ana Sayfa</a>
-                <a routerLink="/login" (click)="toggleMenu()">Giriş Yap</a>
-                <a routerLink="/register" (click)="toggleMenu()">Üye Ol</a>
+                @if (currentUser(); as user) {
+                    <span class="user-name"><i class="pi pi-user"></i>{{ user.fullName }}</span>
+                    <button type="button" class="logout-button" (click)="logout()">Çıkış Yap</button>
+                } @else {
+                    <a routerLink="/login" (click)="toggleMenu()">Giriş Yap</a>
+                    <a routerLink="/register" (click)="toggleMenu()">Üye Ol</a>
+                }
             </nav>
         }
     </header>
@@ -40,7 +48,7 @@
         <div class="footer-grid container">
             <div><a routerLink="/" class="brand footer-brand">Exclusive</a><h4>Bültenimize Katılın</h4><p>İlk siparişinize özel fırsatı kaçırmayın.</p><label class="email"><input type="email" placeholder="E-posta adresiniz" /><i class="pi pi-send"></i></label></div>
             <div><h4>Destek</h4><p>İstanbul, Türkiye</p><a href="mailto:destek@exclusive.com">destek@exclusive.com</a><a href="tel:+902120000000">+90 212 000 00 00</a></div>
-            <div><h4>Hesabım</h4><a routerLink="/login">Giriş Yap</a><a routerLink="/register">Kayıt Ol</a><a routerLink="/">Sepet</a><a routerLink="/">Favoriler</a></div>
+            <div><h4>Hesabım</h4><a routerLink="/login">Giriş Yap</a><a routerLink="/register">Kayıt Ol</a><a routerLink="/cart">Sepet</a><a routerLink="/">Favoriler</a></div>
             <div><h4>Hızlı Link</h4><a routerLink="/">Gizlilik Politikası</a><a routerLink="/">Kullanım Koşulları</a><a routerLink="/">SSS</a><a routerLink="/" fragment="contact">İletişim</a></div>
             <div><h4>Bizi Takip Edin</h4><p>Mobil deneyim yakında.</p><div class="socials"><i class="pi pi-facebook"></i><i class="pi pi-twitter"></i><i class="pi pi-instagram"></i><i class="pi pi-linkedin"></i></div></div>
         </div>
