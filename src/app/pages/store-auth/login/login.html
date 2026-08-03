@@ -3,11 +3,17 @@
     <div class="auth-panel">
         <h1>Hesabınıza giriş yapın</h1><p class="auth-subtitle">Bilgilerinizi aşağıya girin</p>
         <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            @if (apiErrors().length) {
+                <div class="api-error" role="alert">
+                    <i class="pi pi-exclamation-circle"></i>
+                    <div>@for (error of apiErrors(); track $index) { <p>{{ error }}</p> }</div>
+                </div>
+            }
             <div class="field"><label for="login-email">E-posta</label><input pInputText id="login-email" type="email" formControlName="email" autocomplete="email" placeholder="ornek@email.com" />
                 <div class="field-error">@if (showError('email', 'required')) { E-posta zorunludur. } @else if (showError('email', 'email')) { Geçerli bir e-posta adresi girin. }</div></div>
             <div class="field"><label for="login-password">Şifre</label><p-password inputId="login-password" formControlName="password" [feedback]="false" [toggleMask]="true" autocomplete="current-password" placeholder="En az 8 karakter" />
                 <div class="field-error">@if (showError('password', 'required')) { Şifre zorunludur. } @else if (showError('password', 'minlength')) { Şifre en az 8 karakter olmalıdır. }</div></div>
-            <button pButton type="submit" class="submit-button" label="Giriş Yap"></button>
+            <button pButton type="submit" class="submit-button" label="Giriş Yap" [loading]="isSubmitting()" [disabled]="isSubmitting()"></button>
             <p class="auth-switch">Hesabınız yok mu? <a routerLink="/register">Kayıt olun</a></p>
         </form>
     </div>

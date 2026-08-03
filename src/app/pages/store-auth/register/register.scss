@@ -3,3 +3,4 @@
 ::ng-deep .auth-panel .p-password{width:100%}
 ::ng-deep .auth-panel .p-password-input{width:100%;height:46px;border:0;border-bottom:1px solid #aaa;border-radius:0;padding:10px 2px;background:transparent;box-shadow:none}
 ::ng-deep .auth-panel .p-password-input:focus{border-color:#db4444}
+.api-error{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid #f0b5b5;border-radius:4px;color:#a51f1f;background:#fff2f2;font-size:13px}.api-error i{margin-top:2px}.api-error p{margin:0;line-height:1.45}.api-error p+p{margin-top:4px}
