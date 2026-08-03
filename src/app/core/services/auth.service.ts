@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
-import { LoginRequest, LoginResponseData, RegisterRequest, RegisterResponseData } from '../models/auth.models';
+import { CurrentUser, LoginRequest, LoginResponseData, RegisterRequest, RegisterResponseData } from '../models/auth.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -15,5 +15,18 @@ export class AuthService {
 
     login(request: LoginRequest): Observable<ApiResponse<LoginResponseData>> {
         return this.http.post<ApiResponse<LoginResponseData>>(`${this.apiUrl}/login`, request);
+    }
+
+    getCurrentUser(): Observable<ApiResponse<CurrentUser>> {
+        return this.http.get<ApiResponse<CurrentUser>>(`${this.apiUrl}/me`);
+    }
+
+    hasToken(): boolean {
+        return !!sessionStorage.getItem('access_token');
+    }
+
+    logout(): void {
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('token_expires_at');
     }
 }

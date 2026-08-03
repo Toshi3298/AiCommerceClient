@@ -18,3 +18,10 @@ export interface LoginResponseData {
     token: string;
     expiresAt: string;
 }
+
+export interface CurrentUser {
+    userId: string;
+    fullName: string;
+    email: string;
+    role: string;
+}

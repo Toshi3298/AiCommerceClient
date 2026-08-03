@@ -1,13 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CurrentUser } from '../../core/models/auth.models';
+import { AuthService } from '../../core/services/auth.service';
 
 interface Product { name: string; price: number; oldPrice?: number; image: string; badge?: string; reviews: number; }
 
 @Component({ selector: 'app-store-home', standalone: true, imports: [CommonModule, RouterLink, ButtonModule], templateUrl: './store-home.html', styleUrl: './store-home.scss' })
-export class StoreHome {
+export class StoreHome implements OnInit {
     readonly menuOpen = signal(false);
+    readonly currentUser = signal<CurrentUser | null>(null);
     readonly year = new Date().getFullYear();
     readonly categories = [
         { name: 'Telefonlar', icon: 'pi-mobile' }, { name: 'Bilgisayarlar', icon: 'pi-desktop' },
@@ -36,5 +40,36 @@ export class StoreHome {
         { name: 'Premium Bileklik', price: 49, image: '/demo/images/product/chakra-bracelet.jpg', reviews: 88 },
         { name: 'Yeşil Basic Tişört', price: 72, image: '/demo/images/product/green-t-shirt.jpg', reviews: 51 }
     ];
+
+    constructor(private readonly authService: AuthService) {}
+
+    ngOnInit(): void {
+        if (!this.authService.hasToken()) return;
+
+        this.authService.getCurrentUser().subscribe({
+            next: (response) => {
+                if (response.success && this.isValidUser(response.data)) {
+                    this.currentUser.set(response.data);
+                    return;
+                }
+
+                this.logout();
+            },
+            error: (error: HttpErrorResponse) => {
+                if (error.status === 401) this.logout();
+            }
+        });
+    }
+
+    logout(): void {
+        this.authService.logout();
+        this.currentUser.set(null);
+        this.menuOpen.set(false);
+    }
+
     toggleMenu(): void { this.menuOpen.update((open) => !open); }
+
+    private isValidUser(user: CurrentUser | null | undefined): user is CurrentUser {
+        return !!user && typeof user.userId === 'string' && typeof user.fullName === 'string' && typeof user.email === 'string' && typeof user.role === 'string';
+    }
 }
