@@ -4,10 +4,12 @@ import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
+import { StoreHome } from './app/pages/store-home/store-home';
 
 export const appRoutes: Routes = [
+    { path: '', component: StoreHome },
     {
-        path: '',
+        path: 'admin',
         component: AppLayout,
         children: [
             { path: '', component: Dashboard },
