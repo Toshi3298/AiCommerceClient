@@ -5,9 +5,20 @@ import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
 import { StoreHome } from './app/pages/store-home/store-home';
+import { AuthStoreLayout } from './app/pages/store-auth/auth-store-layout';
+import { StoreLogin } from './app/pages/store-auth/login/login';
+import { StoreRegister } from './app/pages/store-auth/register/register';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
+    {
+        path: '',
+        component: AuthStoreLayout,
+        children: [
+            { path: 'login', component: StoreLogin },
+            { path: 'register', component: StoreRegister }
+        ]
+    },
     {
         path: 'admin',
         component: AppLayout,

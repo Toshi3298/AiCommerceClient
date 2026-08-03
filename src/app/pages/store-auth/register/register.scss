@@ -1,0 +1,5 @@
+@use '../auth-page';
+:host{display:block}
+::ng-deep .auth-panel .p-password{width:100%}
+::ng-deep .auth-panel .p-password-input{width:100%;height:46px;border:0;border-bottom:1px solid #aaa;border-radius:0;padding:10px 2px;background:transparent;box-shadow:none}
+::ng-deep .auth-panel .p-password-input:focus{border-color:#db4444}

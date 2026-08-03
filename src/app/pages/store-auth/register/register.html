@@ -1,0 +1,17 @@
+<section class="auth-page">
+    <div class="auth-visual" aria-hidden="true"><div class="visual-copy"><span>EXCLUSIVE</span><strong>Tarzını keşfet,<br />hesabını oluştur.</strong><small>Yeni sezonu keşfet.</small></div><div class="visual-orbit"></div><img class="visual-product product-main" src="/demo/images/product/black-watch.jpg" alt="" /><img class="visual-product product-side" src="/demo/images/product/brown-purse.jpg" alt="" /><div class="visual-bag"><i class="pi pi-shopping-bag"></i></div></div>
+    <div class="auth-panel">
+        <h1>Hesap oluşturun</h1><p class="auth-subtitle">Bilgilerinizi aşağıya girin</p>
+        <form class="auth-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+            <div class="name-row">
+                <div class="field"><label for="first-name">Ad</label><input pInputText id="first-name" formControlName="firstName" autocomplete="given-name" /><div class="field-error">@if (showError('firstName', 'required')) { Ad alanı zorunludur. }</div></div>
+                <div class="field"><label for="last-name">Soyad</label><input pInputText id="last-name" formControlName="lastName" autocomplete="family-name" /><div class="field-error">@if (showError('lastName', 'required')) { Soyad alanı zorunludur. }</div></div>
+            </div>
+            <div class="field"><label for="register-email">E-posta</label><input pInputText id="register-email" type="email" formControlName="email" autocomplete="email" placeholder="ornek@email.com" /><div class="field-error">@if (showError('email', 'required')) { E-posta zorunludur. } @else if (showError('email', 'email')) { Geçerli bir e-posta adresi girin. }</div></div>
+            <div class="field"><label for="register-password">Şifre</label><p-password inputId="register-password" formControlName="password" [feedback]="false" [toggleMask]="true" autocomplete="new-password" placeholder="En az 8 karakter" /><div class="field-error">@if (showError('password', 'required')) { Şifre zorunludur. } @else if (showError('password', 'minlength')) { Şifre en az 8 karakter olmalıdır. }</div></div>
+            <div class="field"><label for="password-confirmation">Şifre tekrarı</label><p-password inputId="password-confirmation" formControlName="passwordConfirmation" [feedback]="false" [toggleMask]="true" autocomplete="new-password" /><div class="field-error">@if (showError('passwordConfirmation', 'required')) { Şifre tekrarı zorunludur. } @else if (showPasswordMismatch()) { Şifreler eşleşmiyor. }</div></div>
+            <button pButton type="submit" class="submit-button" label="Hesap Oluştur"></button>
+            <p class="auth-switch">Zaten hesabınız var mı? <a routerLink="/login">Giriş yapın</a></p>
+        </form>
+    </div>
+</section>
