@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -25,7 +25,8 @@ export class StoreLogin {
     constructor(
         private readonly formBuilder: FormBuilder,
         private readonly authService: AuthService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly route: ActivatedRoute
     ) {
         this.form = this.formBuilder.nonNullable.group({
             email: ['', [Validators.required, Validators.email]],
@@ -63,7 +64,7 @@ export class StoreLogin {
         if (response.success && response.data?.token && response.data.expiresAt) {
             sessionStorage.setItem('access_token', response.data.token);
             sessionStorage.setItem('token_expires_at', response.data.expiresAt);
-            void this.router.navigate(['/']);
+            void this.router.navigateByUrl(this.safeReturnUrl());
             return;
         }
 
@@ -73,6 +74,12 @@ export class StoreLogin {
     private responseErrors(response: ApiResponse<LoginResponseData>): string[] {
         if (response.errors?.length) return response.errors;
         return [response.message || 'Giriş işlemi tamamlanamadı.'];
+    }
+
+    private safeReturnUrl(): string {
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (!returnUrl || !returnUrl.startsWith('/') || returnUrl.startsWith('//') || returnUrl.startsWith('/\\')) return '/';
+        return returnUrl;
     }
 
     private httpErrors(error: HttpErrorResponse): string[] {

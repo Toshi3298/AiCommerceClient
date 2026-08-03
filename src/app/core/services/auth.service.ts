@@ -22,7 +22,16 @@ export class AuthService {
     }
 
     hasToken(): boolean {
-        return !!sessionStorage.getItem('access_token');
+        const token = sessionStorage.getItem('access_token');
+        const expiresAt = sessionStorage.getItem('token_expires_at');
+        const expirationTime = expiresAt ? Date.parse(expiresAt) : Number.NaN;
+
+        if (!token || !expiresAt || !Number.isFinite(expirationTime) || expirationTime <= Date.now()) {
+            this.logout();
+            return false;
+        }
+
+        return true;
     }
 
     logout(): void {
