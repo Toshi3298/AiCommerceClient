@@ -13,6 +13,7 @@
                 <a routerLink="/" fragment="contact">İletişim</a>
                 <a routerLink="/" fragment="about">Hakkımızda</a>
                 @if (currentUser(); as user) {
+                    <a routerLink="/orders">Siparişlerim</a>
                     <span class="user-name"><i class="pi pi-user"></i>{{ user.fullName }}</span>
                     <button type="button" class="logout-button" (click)="logout()">Çıkış Yap</button>
                 } @else if (currentUrl() === '/register') {
@@ -32,6 +33,7 @@
             <nav class="mobile-nav" aria-label="Mobil navigasyon">
                 <a routerLink="/" (click)="toggleMenu()">Ana Sayfa</a>
                 @if (currentUser(); as user) {
+                    <a routerLink="/orders" (click)="toggleMenu()">Siparişlerim</a>
                     <span class="user-name"><i class="pi pi-user"></i>{{ user.fullName }}</span>
                     <button type="button" class="logout-button" (click)="logout()">Çıkış Yap</button>
                 } @else {

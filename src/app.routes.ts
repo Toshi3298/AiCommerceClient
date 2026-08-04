@@ -11,6 +11,9 @@ import { StoreRegister } from './app/pages/store-auth/register/register';
 import { Cart } from './app/pages/cart/cart';
 import { authGuard } from './app/core/guards/auth.guard';
 import { Products } from './app/pages/products/products';
+import { Checkout } from './app/pages/checkout/checkout';
+import { Orders } from './app/pages/orders/orders';
+import { OrderDetail } from './app/pages/order-detail/order-detail';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -21,7 +24,10 @@ export const appRoutes: Routes = [
             { path: 'login', component: StoreLogin },
             { path: 'register', component: StoreRegister },
             { path: 'products', component: Products },
-            { path: 'cart', component: Cart, canActivate: [authGuard] }
+            { path: 'cart', component: Cart, canActivate: [authGuard] },
+            { path: 'checkout', component: Checkout, canActivate: [authGuard] },
+            { path: 'orders', component: Orders, canActivate: [authGuard] },
+            { path: 'orders/:orderId', component: OrderDetail, canActivate: [authGuard] }
         ]
     },
     {

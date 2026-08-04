@@ -24,7 +24,7 @@
             </div>
 
             <div class="cart-actions"><a routerLink="/" class="continue-button"><i class="pi pi-arrow-left"></i>Alışverişe Devam Et</a></div>
-            <div class="summary-wrap"><aside class="cart-summary"><h2>Sepet Toplamı</h2><div><span>Toplam Ürün</span><strong>{{ currentCart.totalQuantity }}</strong></div><div><span>Ara Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><div><span>Kargo</span><strong class="free">Ücretsiz</strong></div><div class="grand-total"><span>Genel Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><button pButton type="button" class="checkout-button" label="Siparişi Tamamla"></button><small>Ödeme adımı yakında kullanıma açılacaktır.</small></aside></div>
+            <div class="summary-wrap"><aside class="cart-summary"><h2>Sepet Toplamı</h2><div><span>Toplam Ürün</span><strong>{{ currentCart.totalQuantity }}</strong></div><div><span>Ara Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><div><span>Kargo</span><strong class="free">Ücretsiz</strong></div><div class="grand-total"><span>Genel Toplam</span><strong>{{ currentCart.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div><a pButton routerLink="/checkout" class="checkout-button" label="Siparişi Tamamla"></a><small>Ödeme adımı yakında kullanıma açılacaktır.</small></aside></div>
         }
     </div>
 </section>
