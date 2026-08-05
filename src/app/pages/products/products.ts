@@ -78,11 +78,18 @@ export class Products implements OnInit {
         this.loadCategories();
         this.route.queryParamMap
             .pipe(
-                map((params) => params.get('search')?.trim() ?? ''),
-                distinctUntilChanged()
+                map((params) => {
+                    const rawCategoryId = params.get('categoryId') ?? '';
+                    const parsedCategoryId = /^\d+$/.test(rawCategoryId) ? Number(rawCategoryId) : null;
+                    return {
+                        search: params.get('search')?.trim() ?? '',
+                        categoryId: parsedCategoryId && Number.isSafeInteger(parsedCategoryId) && parsedCategoryId > 0 ? parsedCategoryId : null
+                    };
+                }),
+                distinctUntilChanged((previous, current) => previous.search === current.search && previous.categoryId === current.categoryId)
             )
-            .subscribe((search) => {
-                this.filterForm.controls.search.setValue(search);
+            .subscribe(({ search, categoryId }) => {
+                this.filterForm.patchValue({ search, categoryId });
                 this.activeFilter.set(this.createFilter(1));
                 this.clearMessages();
                 this.loadProducts();

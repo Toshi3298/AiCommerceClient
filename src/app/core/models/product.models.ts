@@ -26,7 +26,7 @@ export interface ProductFilter {
     minPrice?: number;
     maxPrice?: number;
     inStock?: boolean;
-    sortBy: 'name' | 'price' | 'stock' | 'createdat';
+    sortBy: 'name' | 'price' | 'stock' | 'createdat' | 'createdAt';
     sortDirection: 'asc' | 'desc';
     pageNumber: number;
     pageSize: number;
