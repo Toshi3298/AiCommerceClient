@@ -1,0 +1,26 @@
+<section class="product-detail-page">
+    <div class="detail-container">
+        @if (isLoading()) {
+            <div class="state-panel" role="status"><p-progress-spinner ariaLabel="Ürün yükleniyor" strokeWidth="4" /><h1>Ürün yükleniyor</h1><p>Ürün bilgileri hazırlanıyor.</p></div>
+        } @else if (notFound()) {
+            <div class="state-panel"><span class="state-icon"><i class="pi pi-search"></i></span><h1>Ürün bulunamadı</h1><p>Aradığınız ürün kaldırılmış veya mevcut olmayabilir.</p><a pButton routerLink="/products" label="Ürünlere Dön" icon="pi pi-arrow-left"></a></div>
+        } @else if (loadErrors().length) {
+            <div class="state-panel"><span class="state-icon error"><i class="pi pi-exclamation-circle"></i></span><h1>Ürün yüklenemedi</h1>@for (error of loadErrors(); track $index) { <p>{{ error }}</p> }<div class="state-actions"><button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" (click)="retry()"></button><a pButton routerLink="/products" label="Ürünlere Dön" severity="secondary" [outlined]="true"></a></div></div>
+        } @else if (product(); as item) {
+            <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right"></i><a routerLink="/products">Ürünler</a><i class="pi pi-angle-right"></i><a routerLink="/products">{{ item.categoryName }}</a><i class="pi pi-angle-right"></i><span>{{ item.name }}</span></nav>
+            <div class="detail-grid">
+                <div class="product-visual" aria-label="Ürün görseli bulunmuyor"><span class="category-label">{{ item.categoryName }}</span><div class="visual-icon"><i class="pi pi-image"></i></div><small>Ürün görseli yakında</small></div>
+                <article class="product-info">
+                    <span class="brand">{{ item.brand }}</span><h1>{{ item.name }}</h1>
+                    <div class="availability" [class.unavailable]="!canAddToCart(item)"><i class="pi" [class.pi-check-circle]="canAddToCart(item)" [class.pi-times-circle]="!canAddToCart(item)"></i>{{ !item.isActive ? 'Satışa kapalı' : item.stock > 0 ? item.stock + ' adet stokta' : 'Stokta yok' }}</div>
+                    <strong class="price">{{ item.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong><p class="description">{{ item.description }}</p>
+                    <dl><div><dt>Marka</dt><dd>{{ item.brand }}</dd></div><div><dt>Kategori</dt><dd>{{ item.categoryName }}</dd></div><div><dt>Durum</dt><dd>{{ item.isActive ? 'Aktif' : 'Pasif' }}</dd></div><div><dt>Stok</dt><dd>{{ item.stock }} adet</dd></div></dl>
+                    @if (cartErrors().length) { <div class="message error-message" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of cartErrors(); track $index) { <p>{{ error }}</p> }</div></div> }
+                    @if (successMessage()) { <div class="message success-message" role="status"><i class="pi pi-check-circle"></i><p>{{ successMessage() }}</p></div> }
+                    <div class="purchase-row"><div class="quantity-control" aria-label="Ürün miktarı"><button type="button" aria-label="Miktarı azalt" (click)="decreaseQuantity()" [disabled]="quantity() <= 1 || isAdding()"><i class="pi pi-minus"></i></button><span aria-live="polite">{{ quantity() }}</span><button type="button" aria-label="Miktarı artır" (click)="increaseQuantity()" [disabled]="quantity() >= item.stock || !canAddToCart(item) || isAdding()"><i class="pi pi-plus"></i></button></div><button pButton type="button" label="Sepete Ekle" icon="pi pi-shopping-cart" (click)="addToCart()" [loading]="isAdding()" [disabled]="isAdding() || !canAddToCart(item)"></button></div>
+                    @if (!canAddToCart(item)) { <p class="unavailable-note">Bu ürün şu anda sepete eklenemiyor.</p> }
+                </article>
+            </div>
+        }
+    </div>
+</section>

@@ -85,7 +85,7 @@ export class ProductSearchAutocomplete {
 
     selectProduct(product: Product): void {
         this.dropdownOpen.set(false);
-        void this.router.navigate(['/products'], { queryParams: { search: product.name } });
+        void this.router.navigate(['/products', product.id]);
     }
 
     @HostListener('document:click', ['$event'])

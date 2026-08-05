@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
-import { Category, ProductFilter, ProductListResponseData } from '../models/product.models';
+import { Category, Product, ProductFilter, ProductListResponseData } from '../models/product.models';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -31,6 +31,10 @@ export class ProductService {
     searchProducts(search: string, pageNumber = 1, pageSize = 5): Observable<ApiResponse<ProductListResponseData>> {
         const params = new HttpParams().set('search', search).set('pageNumber', pageNumber).set('pageSize', pageSize);
         return this.http.get<ApiResponse<ProductListResponseData>>(`${this.apiUrl}/products`, { params });
+    }
+
+    getProductById(id: number): Observable<ApiResponse<Product>> {
+        return this.http.get<ApiResponse<Product>>(`${this.apiUrl}/products/${id}`);
     }
 
     getCategories(): Observable<ApiResponse<Category[]>> {

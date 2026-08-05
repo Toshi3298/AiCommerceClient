@@ -14,6 +14,7 @@ import { Products } from './app/pages/products/products';
 import { Checkout } from './app/pages/checkout/checkout';
 import { Orders } from './app/pages/orders/orders';
 import { OrderDetail } from './app/pages/order-detail/order-detail';
+import { ProductDetail } from './app/pages/product-detail/product-detail';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -24,6 +25,7 @@ export const appRoutes: Routes = [
             { path: 'login', component: StoreLogin },
             { path: 'register', component: StoreRegister },
             { path: 'products', component: Products },
+            { path: 'products/:id', component: ProductDetail },
             { path: 'cart', component: Cart, canActivate: [authGuard] },
             { path: 'checkout', component: Checkout, canActivate: [authGuard] },
             { path: 'orders', component: Orders, canActivate: [authGuard] },
