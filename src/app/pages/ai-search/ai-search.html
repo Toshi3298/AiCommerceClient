@@ -1,0 +1,36 @@
+<section class="ai-search-page">
+    <div class="ai-container">
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right"></i><span>AI ile Ürün Ara</span></nav>
+        <header class="page-heading"><span class="heading-icon"><i class="pi pi-sparkles"></i></span><div><span class="section-kicker">Doğal Dil ile Arama</span><h1>AI ile Ürün Ara</h1><p>Aradığınız ürünü günlük konuşma dilinde tarif edin; AI kataloğumuzdaki uygun ürünleri sizin için bulsun.</p></div></header>
+
+        <div class="search-panel">
+            <form [formGroup]="form" (ngSubmit)="search()" novalidate>
+                <label for="ai-prompt">Ne arıyorsunuz?</label>
+                <div class="textarea-wrap" [class.invalid]="promptControl.invalid && promptControl.touched"><textarea id="ai-prompt" formControlName="prompt" rows="5" maxlength="500" placeholder="Örn. 20.000 TL altındaki stokta bulunan telefonları getir" (keydown)="handleShortcut($event)"></textarea><span class="counter">{{ promptControl.value.length }}/500</span></div>
+                <div class="validation-area">
+                    @if (promptControl.touched && promptControl.hasError('required')) { <small>Arama isteği boş bırakılamaz.</small> }
+                    @else if (promptControl.touched && promptControl.hasError('minlength')) { <small>Arama isteği en az 3 karakter olmalıdır.</small> }
+                    @else if (promptControl.touched && promptControl.hasError('maxlength')) { <small>Arama isteği en fazla 500 karakter olabilir.</small> }
+                </div>
+                <div class="form-bottom"><span><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> ile de arayabilirsiniz.</span><button pButton type="submit" label="AI ile Ara" icon="pi pi-sparkles" [loading]="isLoading()" [disabled]="isLoading()"></button></div>
+            </form>
+            <div class="examples"><h2>Örnek aramalar</h2><p>Bir örnek seçin, isterseniz düzenleyin ve ardından aramayı başlatın.</p><div>@for (example of examples; track example) { <button type="button" (click)="selectExample(example)" [disabled]="isLoading()"><i class="pi pi-arrow-up-right"></i>{{ example }}</button> }</div></div>
+        </div>
+
+        @if (isLoading()) { <div class="loading-panel" role="status"><span class="ai-loader"><i class="pi pi-sparkles"></i></span><h2>AI isteğinizi analiz ediyor</h2><p>Doğal dil sorgunuz güvenli T-SQL sorgusuna dönüştürülüyor ve ürün kataloğu taranıyor. Bu işlem biraz sürebilir.</p><span class="loading-dots"><i></i><i></i><i></i></span></div> }
+
+        @if (!isLoading() && errors().length) { <div class="message error-message" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of errors(); track $index) { <p>{{ error }}</p> }</div></div> }
+        @if (!isLoading() && successMessage()) { <div class="message success-message" role="status"><i class="pi pi-check-circle"></i><p>{{ successMessage() }}</p></div> }
+        @if (cartErrors().length) { <div class="message error-message" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of cartErrors(); track $index) { <p>{{ error }}</p> }</div></div> }
+        @if (cartSuccessMessage()) { <div class="message success-message" role="status"><i class="pi pi-shopping-cart"></i><p>{{ cartSuccessMessage() }}</p></div> }
+
+        @if (!isLoading() && result(); as searchResult) {
+            <section class="results-section">
+                <div class="results-heading"><div><span class="section-kicker">AI Sonuçları</span><h2>Bulunan Ürünler</h2></div><span>{{ searchResult.products.length }} ürün</span></div>
+                @if (!searchResult.products.length) { <div class="empty-state"><span><i class="pi pi-search"></i></span><h2>Aramanıza uygun ürün bulunamadı.</h2><p>Arama ifadenizi değiştirerek tekrar deneyebilirsiniz.</p></div> }
+                @else { <div class="product-grid">@for (product of searchResult.products; track product.id) { <article class="product-card" [class.unavailable]="product.stock <= 0 || !product.isActive"><a class="product-visual" [routerLink]="['/products', product.id]" [attr.aria-label]="product.name + ' ürününü incele'"><span>{{ product.categoryName }}</span><i class="pi pi-image"></i>@if (product.stock <= 0 || !product.isActive) { <b>{{ !product.isActive ? 'Satışa Kapalı' : 'Tükendi' }}</b> }</a><div class="product-content"><small>{{ product.brand }}</small><h3><a [routerLink]="['/products', product.id]">{{ product.name }}</a></h3><p>{{ product.description }}</p><div class="product-meta"><strong>{{ product.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong><span [class.out]="product.stock <= 0">{{ product.stock > 0 ? product.stock + ' adet stokta' : 'Stokta yok' }}</span></div><div class="card-actions"><a pButton [routerLink]="['/products', product.id]" label="İncele" severity="secondary" [outlined]="true"></a><button pButton type="button" [label]="product.stock <= 0 || !product.isActive ? 'Tükendi' : 'Sepete Ekle'" icon="pi pi-shopping-cart" (click)="addToCart(product)" [loading]="isAdding(product.id)" [disabled]="isAdding(product.id) || product.stock <= 0 || !product.isActive"></button></div></div></article> }</div> }
+                <details class="sql-details"><summary><i class="pi pi-code"></i>Teknik Detay: Üretilen T-SQL<i class="pi pi-angle-down chevron"></i></summary><div><p>Bu alan, doğal dil → T-SQL dönüşümünü portföy ve demonstrasyon amacıyla gösterir.</p><pre><code>{{ searchResult.generatedSql }}</code></pre></div></details>
+            </section>
+        } @else if (!isLoading() && hasSearched() && !errors().length) { <div class="empty-state"><span><i class="pi pi-search"></i></span><h2>Aramanıza uygun ürün bulunamadı.</h2></div> }
+    </div>
+</section>

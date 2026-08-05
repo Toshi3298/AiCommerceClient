@@ -65,7 +65,7 @@ export class StoreHome implements OnInit, OnDestroy {
     readonly heroSlides = computed<HeroSlide[]>(() => {
         const firstCategory = this.categories()[0];
         return [
-            { eyebrow: 'Exclusive ürün kataloğu', title: 'Aradığınız ürünleri kolayca keşfedin', description: 'Kategori, marka, fiyat ve stok seçenekleriyle kataloğu inceleyin.', icon: 'pi-shopping-bag' },
+            { eyebrow: 'Bicep ürün kataloğu', title: 'Aradığınız ürünleri kolayca keşfedin', description: 'Kategori, marka, fiyat ve stok seçenekleriyle kataloğu inceleyin.', icon: 'pi-shopping-bag' },
             { eyebrow: 'Yeni ürünler', title: 'Kataloğa yeni eklenenlere göz atın', description: 'Mağazamıza eklenen en güncel ürünleri tek yerde görün.', icon: 'pi-sparkles' },
             { eyebrow: firstCategory ? firstCategory.name : 'Kategoriler', title: 'İhtiyacınıza uygun kategoriyi keşfedin', description: 'Gerçek kategori seçenekleri üzerinden ürünlere hızlıca ulaşın.', icon: this.categoryIcon(firstCategory?.name), categoryId: firstCategory?.id }
         ];

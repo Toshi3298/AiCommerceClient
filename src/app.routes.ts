@@ -15,6 +15,7 @@ import { Checkout } from './app/pages/checkout/checkout';
 import { Orders } from './app/pages/orders/orders';
 import { OrderDetail } from './app/pages/order-detail/order-detail';
 import { ProductDetail } from './app/pages/product-detail/product-detail';
+import { AiSearch } from './app/pages/ai-search/ai-search';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -26,6 +27,7 @@ export const appRoutes: Routes = [
             { path: 'register', component: StoreRegister },
             { path: 'products', component: Products },
             { path: 'products/:id', component: ProductDetail },
+            { path: 'ai-search', component: AiSearch },
             { path: 'cart', component: Cart, canActivate: [authGuard] },
             { path: 'checkout', component: Checkout, canActivate: [authGuard] },
             { path: 'orders', component: Orders, canActivate: [authGuard] },
