@@ -28,6 +28,11 @@ export class ProductService {
         return this.http.get<ApiResponse<ProductListResponseData>>(`${this.apiUrl}/products`, { params });
     }
 
+    searchProducts(search: string, pageNumber = 1, pageSize = 5): Observable<ApiResponse<ProductListResponseData>> {
+        const params = new HttpParams().set('search', search).set('pageNumber', pageNumber).set('pageSize', pageSize);
+        return this.http.get<ApiResponse<ProductListResponseData>>(`${this.apiUrl}/products`, { params });
+    }
+
     getCategories(): Observable<ApiResponse<Category[]>> {
         return this.http.get<ApiResponse<Category[]>>(`${this.apiUrl}/categories`);
     }

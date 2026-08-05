@@ -1,0 +1,44 @@
+<div class="product-search">
+    <label class="search-box">
+        <input
+            type="search"
+            placeholder="Ne aramıştınız?"
+            autocomplete="off"
+            aria-label="Ürün ara"
+            [value]="searchText()"
+            (input)="onInput($event)"
+            (focus)="onFocus()"
+            (keydown.escape)="onEscape()"
+            (keydown.enter)="showAllResults()"
+        />
+        <i class="pi pi-search" aria-hidden="true"></i>
+    </label>
+
+    @if (dropdownOpen()) {
+        <div class="search-dropdown" role="listbox" aria-label="Ürün arama sonuçları">
+            @switch (state().status) {
+                @case ('loading') {
+                    <div class="search-state" role="status"><i class="pi pi-spin pi-spinner"></i><span>Ürünler aranıyor...</span></div>
+                }
+                @case ('error') {
+                    <div class="search-state error" role="alert"><i class="pi pi-exclamation-circle"></i><span>Arama sırasında bir hata oluştu.</span></div>
+                }
+                @case ('success') {
+                    @if (state().products.length) {
+                        <div class="suggestions">
+                            @for (product of state().products; track product.id) {
+                                <button type="button" class="suggestion" role="option" (click)="selectProduct(product)">
+                                    <span class="product-placeholder"><i class="pi pi-image"></i></span>
+                                    <span class="product-copy"><strong>{{ product.name }}</strong><small>{{ product.brand }}</small><span class="product-meta"><b>{{ product.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</b><em [class.out-of-stock]="product.stock <= 0">{{ product.stock > 0 ? 'Stokta' : 'Stok yok' }}</em></span></span>
+                                </button>
+                            }
+                        </div>
+                    } @else {
+                        <div class="search-state"><i class="pi pi-search"></i><span>Sonuç bulunamadı.</span></div>
+                    }
+                }
+            }
+            <button type="button" class="show-all" (click)="showAllResults()">Tüm sonuçları gör <i class="pi pi-arrow-right"></i></button>
+        </div>
+    }
+</div>

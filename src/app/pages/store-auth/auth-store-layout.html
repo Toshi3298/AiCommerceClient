@@ -23,7 +23,7 @@
                 }
             </nav>
             <div class="header-actions">
-                <label class="search"><input type="search" placeholder="Ne aramıştınız?" /><i class="pi pi-search"></i></label>
+                <app-product-search-autocomplete />
                 <button type="button" class="icon-button" aria-label="Favoriler"><i class="pi pi-heart"></i></button>
                 <a routerLink="/cart" class="icon-button" aria-label="Sepet"><i class="pi pi-shopping-cart"></i></a>
                 <button type="button" class="menu-button" (click)="toggleMenu()" aria-label="Menü"><i class="pi" [class.pi-bars]="!menuOpen()" [class.pi-times]="menuOpen()"></i></button>

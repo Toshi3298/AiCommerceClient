@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { finalize } from 'rxjs';
+import { distinctUntilChanged, finalize, map } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
 import { Category, Product, ProductFilter, ProductListResponseData } from '../../core/models/product.models';
 import { AuthService } from '../../core/services/auth.service';
@@ -59,7 +59,8 @@ export class Products implements OnInit {
         private readonly productService: ProductService,
         private readonly cartService: CartService,
         private readonly authService: AuthService,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly route: ActivatedRoute
     ) {
         this.filterForm = this.formBuilder.group({
             search: this.formBuilder.nonNullable.control(''),
@@ -75,7 +76,17 @@ export class Products implements OnInit {
 
     ngOnInit(): void {
         this.loadCategories();
-        this.loadProducts();
+        this.route.queryParamMap
+            .pipe(
+                map((params) => params.get('search')?.trim() ?? ''),
+                distinctUntilChanged()
+            )
+            .subscribe((search) => {
+                this.filterForm.controls.search.setValue(search);
+                this.activeFilter.set(this.createFilter(1));
+                this.clearMessages();
+                this.loadProducts();
+            });
     }
 
     applyFilters(): void {

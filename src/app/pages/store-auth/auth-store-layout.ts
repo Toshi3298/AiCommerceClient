@@ -5,11 +5,12 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, map } from 'rxjs';
 import { CurrentUser } from '../../core/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
+import { ProductSearchAutocomplete } from '../../shared/product-search-autocomplete/product-search-autocomplete';
 
 @Component({
     selector: 'app-auth-store-layout',
     standalone: true,
-    imports: [RouterLink, RouterOutlet],
+    imports: [RouterLink, RouterOutlet, ProductSearchAutocomplete],
     templateUrl: './auth-store-layout.html',
     styleUrl: './auth-store-layout.scss'
 })

@@ -5,10 +5,11 @@ import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CurrentUser } from '../../core/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
+import { ProductSearchAutocomplete } from '../../shared/product-search-autocomplete/product-search-autocomplete';
 
 interface Product { name: string; price: number; oldPrice?: number; image: string; badge?: string; reviews: number; }
 
-@Component({ selector: 'app-store-home', standalone: true, imports: [CommonModule, RouterLink, ButtonModule], templateUrl: './store-home.html', styleUrl: './store-home.scss' })
+@Component({ selector: 'app-store-home', standalone: true, imports: [CommonModule, RouterLink, ButtonModule, ProductSearchAutocomplete], templateUrl: './store-home.html', styleUrl: './store-home.scss' })
 export class StoreHome implements OnInit {
     readonly menuOpen = signal(false);
     readonly currentUser = signal<CurrentUser | null>(null);
