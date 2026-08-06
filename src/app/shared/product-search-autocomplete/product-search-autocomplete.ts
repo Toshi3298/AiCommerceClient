@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subject, catchError, debounceTime, distinctUntilChanged, filter, map, of, startWith, switchMap, takeUntil } from 'rxjs';
 import { Product } from '../../core/models/product.models';
 import { ProductService } from '../../core/services/product.service';
+import { ProductImage } from '../product-image/product-image';
 
 type SearchState =
     | { status: 'idle' | 'loading' | 'error'; products: Product[] }
@@ -12,7 +13,7 @@ type SearchState =
 @Component({
     selector: 'app-product-search-autocomplete',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, ProductImage],
     templateUrl: './product-search-autocomplete.html',
     styleUrl: './product-search-autocomplete.scss'
 })

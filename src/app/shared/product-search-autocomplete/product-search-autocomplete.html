@@ -28,7 +28,7 @@
                         <div class="suggestions">
                             @for (product of state().products; track product.id) {
                                 <button type="button" class="suggestion" role="option" (click)="selectProduct(product)">
-                                    <span class="product-placeholder"><i class="pi pi-image"></i></span>
+                                    <span class="product-placeholder"><app-product-image [imageUrl]="product.imageUrl" [alt]="product.name" /></span>
                                     <span class="product-copy"><strong>{{ product.name }}</strong><small>{{ product.brand }}</small><span class="product-meta"><b>{{ product.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</b><em [class.out-of-stock]="product.stock <= 0">{{ product.stock > 0 ? 'Stokta' : 'Stok yok' }}</em></span></span>
                                 </button>
                             }

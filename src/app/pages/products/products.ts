@@ -12,6 +12,7 @@ import { Category, Product, ProductFilter, ProductListResponseData } from '../..
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
+import { ProductImage } from '../../shared/product-image/product-image';
 
 type StockFilter = 'all' | 'true' | 'false';
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'stock-asc' | 'stock-desc' | 'createdat-desc' | 'createdat-asc';
@@ -31,7 +32,7 @@ const SORT_VALUES: Record<SortOption, Pick<ProductFilter, 'sortBy' | 'sortDirect
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, ProgressSpinnerModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, ProgressSpinnerModule, ProductImage],
     templateUrl: './products.html',
     styleUrl: './products.scss'
 })

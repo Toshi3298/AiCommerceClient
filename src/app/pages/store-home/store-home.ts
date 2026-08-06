@@ -12,6 +12,7 @@ import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { CurrentUser } from '../../core/models/auth.models';
 import { ProductSearchAutocomplete } from '../../shared/product-search-autocomplete/product-search-autocomplete';
+import { ProductImage } from '../../shared/product-image/product-image';
 
 interface HeroSlide {
     eyebrow: string;
@@ -28,7 +29,7 @@ const NEW_FILTER: ProductFilter = { sortBy: 'createdAt', sortDirection: 'desc', 
 @Component({
     selector: 'app-store-home',
     standalone: true,
-    imports: [CommonModule, RouterLink, ButtonModule, ProductSearchAutocomplete],
+    imports: [CommonModule, RouterLink, ButtonModule, ProductSearchAutocomplete, ProductImage],
     templateUrl: './store-home.html',
     styleUrl: './store-home.scss'
 })

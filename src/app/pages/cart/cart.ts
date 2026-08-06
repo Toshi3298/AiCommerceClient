@@ -8,11 +8,12 @@ import { Observable, finalize, switchMap, throwError } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
 import { CartItem, CartResponseData } from '../../core/models/cart.models';
 import { CartService } from '../../core/services/cart.service';
+import { ProductImage } from '../../shared/product-image/product-image';
 
 @Component({
     selector: 'app-cart',
     standalone: true,
-    imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule],
+    imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule, ProductImage],
     templateUrl: './cart.html',
     styleUrl: './cart.scss'
 })

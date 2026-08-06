@@ -11,6 +11,7 @@ import { Product } from '../../core/models/product.models';
 import { AiSearchService } from '../../core/services/ai-search.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
+import { ProductImage } from '../product-image/product-image';
 
 interface ChatMessage {
     id: number;
@@ -25,7 +26,7 @@ const WELCOME_MESSAGE = 'Merhaba, ben Bia. Aradığın ürünü doğal dille tar
 @Component({
     selector: 'app-ai-shopping-assistant',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, ProductImage],
     templateUrl: './ai-shopping-assistant.html',
     styleUrl: './ai-shopping-assistant.scss'
 })

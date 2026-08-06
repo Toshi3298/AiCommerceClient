@@ -8,10 +8,11 @@ import { finalize } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
 import { OrderDetail as OrderDetailModel } from '../../core/models/order.models';
 import { OrderService } from '../../core/services/order.service';
+import { ProductImage } from '../../shared/product-image/product-image';
 
 const STATUS_LABELS: Record<string, string> = { Pending: 'Bekliyor', Preparing: 'Hazırlanıyor', Shipped: 'Kargoya Verildi', Delivered: 'Teslim Edildi', Cancelled: 'İptal Edildi' };
 
-@Component({ selector: 'app-order-detail', standalone: true, imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule], templateUrl: './order-detail.html', styleUrl: './order-detail.scss' })
+@Component({ selector: 'app-order-detail', standalone: true, imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule, ProductImage], templateUrl: './order-detail.html', styleUrl: './order-detail.scss' })
 export class OrderDetail implements OnInit {
     readonly order = signal<OrderDetailModel | null>(null); readonly isLoading = signal(false); readonly apiErrors = signal<string[]>([]); readonly invalidId = signal(false); readonly notFound = signal(false); readonly orderCreated = history.state?.orderCreated === true;
     constructor(private readonly route: ActivatedRoute, private readonly orderService: OrderService) {}

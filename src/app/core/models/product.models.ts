@@ -9,6 +9,7 @@ export interface Product {
     createdAt: string;
     categoryId: number;
     categoryName: string;
+    imageUrl: string | null;
 }
 
 export interface ProductListResponseData {

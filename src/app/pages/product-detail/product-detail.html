@@ -9,7 +9,7 @@
         } @else if (product(); as item) {
             <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right"></i><a routerLink="/products">Ürünler</a><i class="pi pi-angle-right"></i><a routerLink="/products">{{ item.categoryName }}</a><i class="pi pi-angle-right"></i><span>{{ item.name }}</span></nav>
             <div class="detail-grid">
-                <div class="product-visual" aria-label="Ürün görseli bulunmuyor"><span class="category-label">{{ item.categoryName }}</span><div class="visual-icon"><i class="pi pi-image"></i></div><small>Ürün görseli yakında</small></div>
+                <div class="product-visual"><app-product-image [imageUrl]="item.imageUrl" [alt]="item.name" /><span class="category-label">{{ item.categoryName }}</span></div>
                 <article class="product-info">
                     <span class="brand">{{ item.brand }}</span><h1>{{ item.name }}</h1>
                     <div class="availability" [class.unavailable]="!canAddToCart(item)"><i class="pi" [class.pi-check-circle]="canAddToCart(item)" [class.pi-times-circle]="!canAddToCart(item)"></i>{{ !item.isActive ? 'Satışa kapalı' : item.stock > 0 ? item.stock + ' adet stokta' : 'Stokta yok' }}</div>

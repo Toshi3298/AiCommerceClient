@@ -7,6 +7,7 @@ export interface CartItem {
     lineTotal: number;
     availableStock: number;
     isActive: boolean;
+    imageUrl: string | null;
 }
 
 export interface CartResponseData {

@@ -10,11 +10,12 @@ import { Product } from '../../core/models/product.models';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
+import { ProductImage } from '../../shared/product-image/product-image';
 
 @Component({
     selector: 'app-product-detail',
     standalone: true,
-    imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule],
+    imports: [CommonModule, RouterLink, ButtonModule, ProgressSpinnerModule, ProductImage],
     templateUrl: './product-detail.html',
     styleUrl: './product-detail.scss'
 })
