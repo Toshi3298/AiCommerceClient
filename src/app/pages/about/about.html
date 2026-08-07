@@ -1,0 +1,18 @@
+<section class="about-page">
+    <div class="page-container">
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right" aria-hidden="true"></i><span>Hakkımızda</span></nav>
+
+        <section class="hero">
+            <div class="hero-copy"><span class="kicker">Bicep’i Tanıyın</span><h1>Alışverişi daha akıllı hâle getiriyoruz</h1><p>Bicep; modern bir e-ticaret deneyiminin temel parçalarını bir araya getiren eğitim ve MVP odaklı bir projedir. Amacımız, ürün keşfinden sipariş yönetimine kadar gerçekçi akışları sade, erişilebilir ve geliştirilebilir bir yapıda sunmaktır.</p><div class="hero-actions"><a pButton routerLink="/products" label="Ürünleri Keşfet" icon="pi pi-arrow-right" iconPos="right"></a><span class="bia-note"><i class="pi pi-sparkles" aria-hidden="true"></i>Bia sağ alt köşede sizi bekliyor</span></div></div>
+            <div class="hero-visual" aria-hidden="true"><span class="visual-ring ring-one"></span><span class="visual-ring ring-two"></span><div><i class="pi pi-shopping-bag"></i><b>Bicep</b><small>Akıllı mağaza deneyimi</small></div></div>
+        </section>
+
+        <section class="facts" aria-label="Proje kazanımları"><article><strong>Uçtan uca</strong><span>Ürün, sepet ve sipariş akışları</span></article><article><strong>Responsive</strong><span>Masaüstü, tablet ve mobil deneyim</span></article><article><strong>Modüler</strong><span>Geliştirilebilir frontend ve backend yapısı</span></article></section>
+
+        <section class="section-block"><div class="section-heading"><span class="kicker">Öne Çıkanlar</span><h2>Mağaza deneyiminin temel parçaları</h2><p>Bicep, bir MVP’nin ihtiyaç duyduğu müşteri yolculuğunu açık ve tutarlı ekranlarla gösterir.</p></div><div class="feature-grid">@for (feature of features; track feature.title) { <article><span class="feature-icon"><i class="pi {{ feature.icon }}" aria-hidden="true"></i></span><h3>{{ feature.title }}</h3><p>{{ feature.description }}</p></article> }</div></section>
+
+        <section class="advantages"><div><span class="kicker">Yaklaşımımız</span><h2>Öğrenmek, denemek ve geliştirmek için tasarlandı</h2><p>Proje, gerçek bir şirket geçmişi veya ticari ölçek iddiasında bulunmaz. Bunun yerine modern uygulama mimarisini, temiz kullanıcı akışlarını ve yapay zekâ destekli ürün keşfini uygulanabilir bir örnek üzerinde bir araya getirir.</p></div><div class="advantage-list"><article><i class="pi pi-check-circle"></i><div><h3>Açık kullanıcı yolculuğu</h3><p>Temel işlemler gereksiz karmaşıklık olmadan tamamlanır.</p></div></article><article><i class="pi pi-mobile"></i><div><h3>Her ekrana uyumlu</h3><p>İçerik ve aksiyonlar farklı ekran ölçülerinde erişilebilir kalır.</p></div></article><article><i class="pi pi-code"></i><div><h3>Geliştirmeye uygun</h3><p>Bağımsız bileşenler ve katmanlı yapı yeni özelliklere alan açar.</p></div></article></div></section>
+
+        <section class="technology"><div class="section-heading"><span class="kicker">Teknoloji</span><h2>Bicep’in teknik bileşenleri</h2></div><div class="technology-list">@for (technology of technologies; track technology) { <span>{{ technology }}</span> }</div></section>
+    </div>
+</section>

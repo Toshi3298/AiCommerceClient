@@ -1,0 +1,29 @@
+<section class="contact-page">
+    <div class="page-container">
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a routerLink="/">Ana Sayfa</a><i class="pi pi-angle-right" aria-hidden="true"></i><span>İletişim</span></nav>
+
+        <header class="page-heading"><span class="kicker">Bize Ulaşın</span><h1>Nasıl yardımcı olabiliriz?</h1><p>Bicep deneyimiyle ilgili düşüncelerinizi veya sorularınızı aşağıdaki formda kontrol edebilirsiniz.</p></header>
+
+        <div class="contact-grid">
+            <aside class="contact-details" aria-label="İletişim bilgileri">
+                <div class="demo-notice"><i class="pi pi-info-circle" aria-hidden="true"></i><p>Aşağıdaki bilgiler eğitim ve MVP projesi için kullanılan demo iletişim bilgileridir.</p></div>
+                <article><span class="contact-icon"><i class="pi pi-map-marker" aria-hidden="true"></i></span><div><small>Konum</small><strong>İstanbul, Türkiye</strong><p>Demo proje konumu</p></div></article>
+                <article><span class="contact-icon"><i class="pi pi-envelope" aria-hidden="true"></i></span><div><small>E-posta</small><a href="mailto:destek@bicep.com">destek@bicep.com</a><p>Demo destek adresi</p></div></article>
+                <article><span class="contact-icon"><i class="pi pi-phone" aria-hidden="true"></i></span><div><small>Telefon</small><a href="tel:+902120000000">+90 212 000 00 00</a><p>Demo iletişim hattı</p></div></article>
+                <div class="decorative-panel" aria-hidden="true"><i class="pi pi-comments"></i><span>Sorularınızı dinliyoruz</span></div>
+            </aside>
+
+            <section class="form-card" aria-labelledby="contact-form-title">
+                <div><span class="kicker">İletişim Formu</span><h2 id="contact-form-title">Mesajınızı kontrol edin</h2><p>Bu form henüz mesaj göndermez; alanların doğruluğunu kontrol etmenize yardımcı olur.</p></div>
+                <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                    <div class="field"><label for="full-name">Ad Soyad</label><input pInputText id="full-name" type="text" formControlName="adSoyad" autocomplete="name" maxlength="100" [attr.aria-invalid]="form.controls.adSoyad.touched && form.controls.adSoyad.invalid" aria-describedby="full-name-error" /><small id="full-name-error" class="field-error">@if (showError('adSoyad', 'required')) { Ad soyad alanı zorunludur. } @else if (showError('adSoyad', 'minlength')) { Ad soyad en az 2 karakter olmalıdır. } @else if (showError('adSoyad', 'maxlength')) { Ad soyad en fazla 100 karakter olabilir. }</small></div>
+                    <div class="field"><label for="contact-email">E-posta</label><input pInputText id="contact-email" type="email" formControlName="email" autocomplete="email" [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid" aria-describedby="email-error" /><small id="email-error" class="field-error">@if (showError('email', 'required')) { E-posta alanı zorunludur. } @else if (showError('email', 'email')) { Geçerli bir e-posta adresi girin. }</small></div>
+                    <div class="field full-width"><label for="subject">Konu</label><input pInputText id="subject" type="text" formControlName="konu" maxlength="150" [attr.aria-invalid]="form.controls.konu.touched && form.controls.konu.invalid" aria-describedby="subject-error" /><small id="subject-error" class="field-error">@if (showError('konu', 'required')) { Konu alanı zorunludur. } @else if (showError('konu', 'minlength')) { Konu en az 3 karakter olmalıdır. } @else if (showError('konu', 'maxlength')) { Konu en fazla 150 karakter olabilir. }</small></div>
+                    <div class="field full-width"><div class="label-row"><label for="message">Mesaj</label><span>{{ form.controls.mesaj.value.length }}/1000</span></div><textarea id="message" formControlName="mesaj" rows="7" maxlength="1000" [attr.aria-invalid]="form.controls.mesaj.touched && form.controls.mesaj.invalid" aria-describedby="message-error"></textarea><small id="message-error" class="field-error">@if (showError('mesaj', 'required')) { Mesaj alanı zorunludur. } @else if (showError('mesaj', 'minlength')) { Mesaj en az 10 karakter olmalıdır. } @else if (showError('mesaj', 'maxlength')) { Mesaj en fazla 1000 karakter olabilir. }</small></div>
+                    @if (formNotice()) { <div class="form-notice" role="status"><i class="pi pi-info-circle" aria-hidden="true"></i><span>{{ formNotice() }}</span></div> }
+                    <div class="form-actions"><button pButton type="submit" label="Mesajı Kontrol Et" icon="pi pi-check"></button></div>
+                </form>
+            </section>
+        </div>
+    </div>
+</section>

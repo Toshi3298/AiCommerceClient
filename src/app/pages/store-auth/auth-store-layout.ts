@@ -1,8 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { CurrentUser } from '../../core/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
 import { ProductSearchAutocomplete } from '../../shared/product-search-autocomplete/product-search-autocomplete';
@@ -20,17 +18,8 @@ export class AuthStoreLayout implements OnInit {
     readonly menuOpen = signal(false);
     readonly currentUser = signal<CurrentUser | null>(null);
     readonly year = new Date().getFullYear();
-    readonly currentUrl = toSignal(
-        this.router.events.pipe(
-            filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-            map((event) => event.urlAfterRedirects)
-        ),
-        { initialValue: this.router.url }
-    );
-
     ngOnInit(): void {
-        const isStorePage = ['/cart', '/products', '/checkout', '/orders', '/ai-search'].some((path) => this.currentUrl().startsWith(path));
-        if (!isStorePage || !this.authService.hasToken()) return;
+        if (!this.authService.hasToken()) return;
 
         this.authService.getCurrentUser().subscribe({
             next: (response) => {

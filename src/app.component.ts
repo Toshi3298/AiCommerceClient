@@ -14,7 +14,7 @@ export class AppComponent {
     private readonly currentUrl = signal(this.router.url);
     readonly showAssistant = computed(() => {
         const path = this.currentUrl().split('?')[0].split('#')[0];
-        return path === '/' || ['/products', '/cart', '/checkout', '/orders', '/login', '/register', '/ai-search'].some((customerPath) => path === customerPath || path.startsWith(`${customerPath}/`));
+        return path === '/' || ['/products', '/cart', '/checkout', '/orders', '/login', '/register', '/ai-search', '/about', '/contact'].some((customerPath) => path === customerPath || path.startsWith(`${customerPath}/`));
     });
 
     constructor() {
