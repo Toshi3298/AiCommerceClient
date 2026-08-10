@@ -1,0 +1,69 @@
+<section class="admin-dashboard" aria-labelledby="dashboard-title">
+    <header class="dashboard-header">
+        <div>
+            <span class="dashboard-kicker">Yönetim Paneli</span>
+            <h1 id="dashboard-title">Genel Bakış</h1>
+            <p>Mağazanızın güncel performansını ve son siparişlerini takip edin.</p>
+        </div>
+    </header>
+
+    @if (isLoading()) {
+        <div class="state-card" role="status" aria-live="polite">
+            <p-progress-spinner ariaLabel="Dashboard yükleniyor" strokeWidth="4" />
+            <h2>Dashboard bilgileri yükleniyor</h2>
+            <p>Lütfen bekleyin.</p>
+        </div>
+    } @else if (errors().length) {
+        <div class="state-card error-card" role="alert">
+            <i class="pi pi-exclamation-circle state-icon"></i>
+            <h2>Bilgiler yüklenemedi</h2>
+            <div class="error-list">
+                @for (error of errors(); track $index) {
+                    <p>{{ error }}</p>
+                }
+            </div>
+            <button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" (click)="loadDashboard()"></button>
+        </div>
+    } @else if (dashboard(); as data) {
+        <div class="stats-grid">
+            <article class="stat-card"><span class="stat-icon"><i class="pi pi-box"></i></span><div><span>Toplam Ürün</span><strong>{{ data.totalProducts }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon success"><i class="pi pi-check-circle"></i></span><div><span>Aktif Ürün</span><strong>{{ data.activeProducts }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon warning"><i class="pi pi-exclamation-triangle"></i></span><div><span>Stokta Olmayan</span><strong>{{ data.outOfStockProducts }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon"><i class="pi pi-tags"></i></span><div><span>Toplam Kategori</span><strong>{{ data.totalCategories }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon"><i class="pi pi-users"></i></span><div><span>Toplam Müşteri</span><strong>{{ data.totalCustomers }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon"><i class="pi pi-shopping-bag"></i></span><div><span>Toplam Sipariş</span><strong>{{ data.totalOrders }}</strong></div></article>
+            <article class="stat-card"><span class="stat-icon warning"><i class="pi pi-clock"></i></span><div><span>Bekleyen Sipariş</span><strong>{{ data.pendingOrders }}</strong></div></article>
+            <article class="stat-card revenue-card"><span class="stat-icon success"><i class="pi pi-wallet"></i></span><div><span>Toplam Ciro</span><strong>{{ data.totalRevenue | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div></article>
+        </div>
+
+        <section class="orders-card" aria-labelledby="recent-orders-title">
+            <div class="card-header">
+                <div><span class="dashboard-kicker">Siparişler</span><h2 id="recent-orders-title">Son Siparişler</h2></div>
+                <span class="order-count">{{ data.recentOrders.length }} kayıt</span>
+            </div>
+
+            @if (data.recentOrders.length) {
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Sipariş No</th><th>Müşteri</th><th>E-posta</th><th>Tarih</th><th>Ürün Adedi</th><th>Durum</th><th class="numeric">Toplam</th></tr></thead>
+                        <tbody>
+                            @for (order of data.recentOrders; track order.orderId) {
+                                <tr>
+                                    <td><strong>#{{ order.orderId }}</strong></td>
+                                    <td>{{ order.customerName }}</td>
+                                    <td>{{ order.customerEmail }}</td>
+                                    <td>{{ order.createdAt | date: 'd MMM y, HH:mm' : '' : 'tr-TR' }}</td>
+                                    <td>{{ order.totalQuantity }}</td>
+                                    <td><p-tag [value]="statusLabel(order.status)" [severity]="statusSeverity(order.status)" /></td>
+                                    <td class="numeric"><strong>{{ order.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            } @else {
+                <div class="empty-state"><i class="pi pi-shopping-bag"></i><p>Henüz sipariş bulunmuyor.</p></div>
+            }
+        </section>
+    }
+</section>

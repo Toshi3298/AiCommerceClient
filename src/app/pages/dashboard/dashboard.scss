@@ -1,0 +1,223 @@
+:host {
+    display: block;
+}
+
+.admin-dashboard {
+    display: grid;
+    gap: 2rem;
+}
+
+.dashboard-header h1,
+.card-header h2,
+.state-card h2 {
+    margin: 0;
+    color: var(--text-color);
+}
+
+.dashboard-header h1 {
+    margin-top: 0.25rem;
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+}
+
+.dashboard-header p,
+.state-card p {
+    margin: 0.5rem 0 0;
+    color: var(--text-color-secondary);
+}
+
+.dashboard-kicker {
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.stat-card,
+.orders-card,
+.state-card {
+    border: 1px solid var(--surface-border);
+    border-radius: var(--content-border-radius);
+    background: var(--surface-card);
+    color: var(--text-color);
+}
+
+.stat-card {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.stat-card > div {
+    min-width: 0;
+}
+
+.stat-card span:not(.stat-icon) {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+}
+
+.stat-card strong {
+    display: block;
+    overflow: hidden;
+    font-size: 1.5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stat-icon {
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    flex: 0 0 3rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+    color: var(--primary-color);
+    font-size: 1.25rem;
+}
+
+.stat-icon.success {
+    background: color-mix(in srgb, var(--p-green-500) 15%, transparent);
+    color: var(--p-green-500);
+}
+
+.stat-icon.warning {
+    background: color-mix(in srgb, var(--p-orange-500) 15%, transparent);
+    color: var(--p-orange-500);
+}
+
+.orders-card {
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.card-header h2 {
+    margin-top: 0.2rem;
+    font-size: 1.25rem;
+}
+
+.order-count {
+    color: var(--text-color-secondary);
+    font-size: 0.875rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+
+th,
+td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--surface-border);
+    text-align: left;
+}
+
+th {
+    background: var(--surface-ground);
+    color: var(--text-color-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+tbody tr:hover {
+    background: var(--surface-hover);
+}
+
+.numeric {
+    text-align: right;
+}
+
+.state-card,
+.empty-state {
+    display: flex;
+    min-height: 18rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.state-card p-progress-spinner {
+    margin-bottom: 1.25rem;
+}
+
+.state-icon,
+.empty-state i {
+    margin-bottom: 1rem;
+    color: var(--text-color-secondary);
+    font-size: 2.5rem;
+}
+
+.error-card .state-icon {
+    color: var(--p-red-500);
+}
+
+.error-list {
+    margin: 0.5rem 0 1.25rem;
+}
+
+.error-list p {
+    margin: 0.25rem 0;
+}
+
+.empty-state {
+    min-height: 14rem;
+    color: var(--text-color-secondary);
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+@media (max-width: 1199px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .admin-dashboard {
+        gap: 1.25rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card,
+    .card-header {
+        padding: 1rem;
+    }
+}

@@ -18,6 +18,7 @@ import { ProductDetail } from './app/pages/product-detail/product-detail';
 import { AiSearch } from './app/pages/ai-search/ai-search';
 import { About } from './app/pages/about/about';
 import { Contact } from './app/pages/contact/contact';
+import { adminGuard } from './app/core/guards/admin.guard';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -41,6 +42,7 @@ export const appRoutes: Routes = [
     {
         path: 'admin',
         component: AppLayout,
+        canActivate: [adminGuard],
         children: [
             { path: '', component: Dashboard },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
