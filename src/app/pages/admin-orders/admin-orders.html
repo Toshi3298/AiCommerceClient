@@ -1,0 +1,206 @@
+<p-toast />
+<p-confirmdialog />
+
+<section class="admin-orders" aria-labelledby="orders-title">
+    <header class="page-header">
+        <div>
+            <span class="kicker">Yönetim</span>
+            <h1 id="orders-title">Siparişler</h1>
+            <p>Siparişleri inceleyin ve teslimat durumlarını yönetin.</p>
+        </div>
+    </header>
+
+    <form class="filter-card" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+        <div class="field search-field"><label for="order-search">Arama</label><input id="order-search" pInputText formControlName="search" placeholder="Müşteri, e-posta veya sipariş no" /></div>
+        <div class="field"><label for="status-filter">Durum</label><p-select inputId="status-filter" formControlName="status" [options]="statusFilterOptions" optionLabel="label" optionValue="value" appendTo="body" /></div>
+        <div class="field"><label for="page-size">Sayfa boyutu</label><p-select inputId="page-size" formControlName="pageSize" [options]="pageSizeOptions" appendTo="body" /></div>
+        <div class="filter-actions">
+            <button pButton type="submit" label="Ara" icon="pi pi-search" [disabled]="isListLoading()"></button
+            ><button pButton type="button" label="Filtreleri Temizle" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" (click)="clearFilters()" [disabled]="isListLoading()"></button>
+        </div>
+    </form>
+
+    @if (listErrors().length) {
+    <div class="error-panel" role="alert">
+        <i class="pi pi-exclamation-circle"></i>
+        <div>
+            @for (error of listErrors(); track $index) {
+            <p>{{ error }}</p>
+            }
+        </div>
+        <button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" size="small" (click)="loadOrders()" [disabled]="isListLoading()"></button>
+    </div>
+    } @if (isListLoading() && !orders().length) {
+    <div class="loading-card" role="status">
+        <p-progress-spinner ariaLabel="Siparişler yükleniyor" strokeWidth="4" />
+        <h2>Siparişler yükleniyor</h2>
+        <p>Lütfen bekleyin.</p>
+    </div>
+    } @else {
+    <section class="table-card" aria-label="Sipariş listesi">
+        <p-table [value]="orders()" [loading]="isListLoading()" dataKey="orderId" responsiveLayout="scroll" [rowHover]="true">
+            <ng-template #header
+                ><tr>
+                    <th>Sipariş No</th>
+                    <th>Müşteri</th>
+                    <th>E-posta</th>
+                    <th>Tarih</th>
+                    <th>Ürün Adedi</th>
+                    <th>Durum</th>
+                    <th>Toplam</th>
+                    <th>İşlemler</th>
+                </tr></ng-template
+            >
+            <ng-template #body let-order>
+                <tr>
+                    <td><strong>#{{ order.orderId }}</strong></td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.customerEmail }}</td>
+                    <td>{{ order.createdAt | date: 'd MMM y, HH:mm' : '' : 'tr-TR' }}</td>
+                    <td>{{ order.totalQuantity }}</td>
+                    <td><p-tag [value]="statusLabel(order.status)" [severity]="statusSeverity(order.status)" /></td>
+                    <td><strong>{{ order.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></td>
+                    <td>
+                        <div class="actions-cell">
+                            <button pButton type="button" label="Detayı Gör" icon="pi pi-eye" size="small" [outlined]="true" (click)="openDetail(order.orderId)" [disabled]="isDetailLoading() || isUpdating(order.orderId)"></button>
+                            @if (canUpdateStatus(order.status)) {
+                            <p-select
+                                [options]="statusOptions(order.status)"
+                                optionLabel="label"
+                                optionValue="value"
+                                placeholder="Yeni durum"
+                                appendTo="body"
+                                [ngModel]="selectedStatus(order.orderId)"
+                                (ngModelChange)="selectStatus(order.orderId, $event)"
+                                [ngModelOptions]="{ standalone: true }"
+                                [disabled]="isUpdating(order.orderId)"
+                            />
+                            <button
+                                pButton
+                                type="button"
+                                label="Güncelle"
+                                icon="pi pi-check"
+                                size="small"
+                                (click)="confirmStatusUpdate(order.orderId, order.status)"
+                                [loading]="isUpdating(order.orderId)"
+                                [disabled]="!selectedStatus(order.orderId) || isUpdating(order.orderId)"
+                            ></button>
+                            } @else { <small class="terminal-info">{{ statusInfo(order.status) }}</small> }
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage
+                ><tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="pi pi-shopping-bag"></i>
+                            <p>Filtrelere uygun sipariş bulunamadı.</p>
+                        </div>
+                    </td>
+                </tr></ng-template
+            >
+        </p-table>
+        @if (totalCount() > 0) { <p-paginator [first]="(pageNumber() - 1) * pageSize()" [rows]="pageSize()" [totalRecords]="totalCount()" [rowsPerPageOptions]="pageSizeOptions" (onPageChange)="onPageChange($event)" /> }
+    </section>
+    }
+</section>
+
+<p-dialog [visible]="detailVisible()" (visibleChange)="detailVisible.set($event)" header="Sipariş Detayı" [modal]="true" [style]="{ width: '58rem', maxWidth: 'calc(100vw - 2rem)' }" appendTo="body">
+    @if (isDetailLoading()) {
+    <div class="dialog-state" role="status">
+        <p-progress-spinner ariaLabel="Sipariş detayı yükleniyor" strokeWidth="4" />
+        <p>Sipariş detayı yükleniyor.</p>
+    </div>
+    } @else if (detailErrors().length) {
+    <div class="dialog-state error-state" role="alert">
+        <i class="pi pi-exclamation-circle"></i>@for (error of detailErrors(); track $index) {
+        <p>{{ error }}</p>
+        }<button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" (click)="retryDetail()" [disabled]="isDetailLoading()"></button>
+    </div>
+    } @else if (detail(); as order) {
+    <div class="detail-content">
+        <div class="detail-heading">
+            <div>
+                <span class="kicker">Sipariş</span>
+                <h2>#{{ order.orderId }}</h2>
+            </div>
+            <p-tag [value]="statusLabel(order.status)" [severity]="statusSeverity(order.status)" />
+        </div>
+        <dl class="detail-grid">
+            <div>
+                <dt>Tarih</dt>
+                <dd>{{ order.createdAt | date: 'd MMMM y, HH:mm' : '' : 'tr-TR' }}</dd>
+            </div>
+            <div>
+                <dt>Müşteri</dt>
+                <dd>{{ order.customerName }}</dd>
+            </div>
+            <div>
+                <dt>E-posta</dt>
+                <dd>{{ order.customerEmail }}</dd>
+            </div>
+            <div>
+                <dt>Kullanıcı ID</dt>
+                <dd>#{{ order.userId }}</dd>
+            </div>
+            <div class="wide">
+                <dt>Teslimat Adresi</dt>
+                <dd>{{ order.shippingAddress }}</dd>
+            </div>
+            <div>
+                <dt>Genel Toplam</dt>
+                <dd class="total">{{ order.totalPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</dd>
+            </div>
+        </dl>
+
+        <section class="status-update" aria-label="Sipariş durumunu güncelle">
+            <h3>Durum Güncelleme</h3>
+            @if (canUpdateStatus(order.status)) {
+            <div>
+                <p-select
+                    [options]="statusOptions(order.status)"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Yeni durum"
+                    appendTo="body"
+                    [ngModel]="selectedStatus(order.orderId)"
+                    (ngModelChange)="selectStatus(order.orderId, $event)"
+                    [ngModelOptions]="{ standalone: true }"
+                    [disabled]="isUpdating(order.orderId)"
+                /><button
+                    pButton
+                    type="button"
+                    label="Durumu Güncelle"
+                    icon="pi pi-check"
+                    (click)="confirmStatusUpdate(order.orderId, order.status)"
+                    [loading]="isUpdating(order.orderId)"
+                    [disabled]="!selectedStatus(order.orderId) || isUpdating(order.orderId)"
+                ></button>
+            </div>
+            } @else {
+            <p><i class="pi pi-info-circle"></i> {{ statusInfo(order.status) }}</p>
+            }
+        </section>
+
+        <section class="items-section">
+            <h3>Sipariş Ürünleri</h3>
+            @if (order.items.length) {
+            <div class="items-list">
+                @for (item of order.items; track item.productId) {
+                <article class="order-item">
+                    <div class="item-image"><app-product-image [imageUrl]="item.imageUrl" [alt]="item.productName" /></div>
+                    <div class="item-main"><strong>{{ item.productName }}</strong><span>Ürün #{{ item.productId }}</span></div>
+                    <div><span>Adet</span><strong>{{ item.quantity }}</strong></div>
+                    <div><span>Birim Fiyat</span><strong>{{ item.unitPrice | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div>
+                    <div><span>Ara Toplam</span><strong>{{ item.lineTotal | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></div>
+                </article>
+                }
+            </div>
+            } @else {
+            <div class="empty-state compact"><p>Sipariş ürünü bulunmuyor.</p></div>
+            }
+        </section>
+    </div>
+    }
+</p-dialog>

@@ -29,7 +29,7 @@ export class AppMenu implements OnInit {
                     { label: 'Genel Bakış', icon: 'pi pi-fw pi-home', routerLink: ['/admin'] },
                     { label: 'Ürünler', icon: 'pi pi-fw pi-box', routerLink: ['/admin/products'] },
                     { label: 'Kategoriler', icon: 'pi pi-fw pi-tags', routerLink: ['/admin/categories'] },
-                    { label: 'Siparişler', icon: 'pi pi-fw pi-shopping-bag', disabled: true }
+                    { label: 'Siparişler', icon: 'pi pi-fw pi-shopping-bag', routerLink: ['/admin/orders'] }
                 ]
             },
             {

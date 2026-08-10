@@ -11,8 +11,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
-import { finalize } from 'rxjs';
-import { AdminCategory, CreateCategoryRequest, UpdateCategoryRequest } from '../../core/models/admin-category.models';
+import { Observable, finalize } from 'rxjs';
+import { AdminCategory, CreateCategoryRequest } from '../../core/models/admin-category.models';
 import { ApiResponse } from '../../core/models/api-response';
 import { AdminCategoryService } from '../../core/services/admin-category.service';
 
@@ -94,7 +94,7 @@ export class AdminCategories implements OnInit {
         this.isSaving.set(true);
         this.dialogErrors.set([]);
         const isCreate = this.dialogMode() === 'create';
-        const request$ = isCreate ? this.categoryService.createCategory(request) : this.categoryService.updateCategory(this.editingId!, request satisfies UpdateCategoryRequest);
+        const request$: Observable<ApiResponse<unknown>> = isCreate ? this.categoryService.createCategory(request) : this.categoryService.updateCategory(this.editingId!, request);
 
         request$
             .pipe(
