@@ -1,0 +1,164 @@
+<p-toast />
+<p-confirmdialog />
+
+<section class="admin-products" aria-labelledby="products-title">
+    <header class="page-header">
+        <div>
+            <span class="kicker">Yönetim</span>
+            <h1 id="products-title">Ürünler</h1>
+            <p>Ürün kataloğunu, stokları ve yayın durumlarını yönetin.</p>
+        </div>
+        <button pButton type="button" label="Yeni Ürün" icon="pi pi-plus" (click)="openCreateDialog()"></button>
+    </header>
+
+    <form class="filter-card" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+        <div class="field search-field"><label for="search">Arama</label><input id="search" pInputText formControlName="search" placeholder="Ürün adı veya açıklama" /></div>
+        <div class="field"><label for="brand">Marka</label><input id="brand" pInputText formControlName="brand" placeholder="Marka" /></div>
+        <div class="field"><label for="category">Kategori</label><p-select inputId="category" formControlName="categoryId" [options]="categories()" optionLabel="name" optionValue="id" placeholder="Tümü" [showClear]="true" appendTo="body" /></div>
+        <div class="field"><label for="min-price">Minimum fiyat</label><p-inputnumber inputId="min-price" formControlName="minPrice" mode="currency" currency="TRY" locale="tr-TR" [min]="0" /></div>
+        <div class="field"><label for="max-price">Maksimum fiyat</label><p-inputnumber inputId="max-price" formControlName="maxPrice" mode="currency" currency="TRY" locale="tr-TR" [min]="0" /></div>
+        <div class="field"><label for="stock-filter">Stok durumu</label><p-select inputId="stock-filter" formControlName="inStock" [options]="stockOptions" optionLabel="label" optionValue="value" appendTo="body" /></div>
+        <div class="field"><label for="activity-filter">Aktiflik</label><p-select inputId="activity-filter" formControlName="isActive" [options]="activityOptions" optionLabel="label" optionValue="value" appendTo="body" /></div>
+        <div class="field"><label for="sort">Sıralama</label><p-select inputId="sort" formControlName="sort" [options]="sortOptions" optionLabel="label" optionValue="value" appendTo="body" /></div>
+        <div class="field"><label for="page-size">Sayfa boyutu</label><p-select inputId="page-size" formControlName="pageSize" [options]="pageSizeOptions" appendTo="body" /></div>
+        <div class="filter-actions">
+            <button pButton type="submit" label="Filtrele" icon="pi pi-filter" [disabled]="isListLoading()"></button
+            ><button pButton type="button" label="Temizle" icon="pi pi-filter-slash" severity="secondary" [outlined]="true" (click)="clearFilters()" [disabled]="isListLoading()"></button>
+        </div>
+    </form>
+
+    @if (listErrors().length) {
+    <div class="error-panel" role="alert">
+        <i class="pi pi-exclamation-circle"></i>
+        <div>
+            @for (error of listErrors(); track $index) {
+            <p>{{ error }}</p>
+            }
+        </div>
+        <button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" size="small" (click)="loadProducts()" [disabled]="isListLoading()"></button>
+    </div>
+    }
+
+    <section class="table-card" aria-label="Ürün listesi">
+        <p-table [value]="products()" [loading]="isListLoading()" dataKey="id" responsiveLayout="scroll" [rowHover]="true">
+            <ng-template #header
+                ><tr>
+                    <th>Görsel</th>
+                    <th>Ürün Adı</th>
+                    <th>Marka</th>
+                    <th>Kategori</th>
+                    <th>Fiyat</th>
+                    <th>Stok</th>
+                    <th>Durum</th>
+                    <th>Oluşturulma</th>
+                    <th>İşlemler</th>
+                </tr></ng-template
+            >
+            <ng-template #body let-product>
+                <tr>
+                    <td>
+                        <div class="product-thumb"><app-product-image [imageUrl]="product.imageUrl" [alt]="product.name" /></div>
+                    </td>
+                    <td><strong class="product-name">{{ product.name }}</strong></td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.categoryName }}</td>
+                    <td><strong>{{ product.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong></td>
+                    <td><p-tag [value]="stockLabel(product.stock) + ' (' + product.stock + ')'" [severity]="stockSeverity(product.stock)" /></td>
+                    <td><p-tag [value]="product.isActive ? 'Aktif' : 'Pasif'" [severity]="product.isActive ? 'success' : 'secondary'" /></td>
+                    <td>{{ product.createdAt | date: 'd MMM y, HH:mm' : '' : 'tr-TR' }}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button pButton type="button" icon="pi pi-pencil" label="Düzenle" size="small" [outlined]="true" (click)="openEditDialog(product.id)" [disabled]="isDetailLoading()"></button>@if (product.isActive) {
+                            <button
+                                pButton
+                                type="button"
+                                icon="pi pi-ban"
+                                label="Pasife Al"
+                                size="small"
+                                severity="danger"
+                                [outlined]="true"
+                                (click)="confirmDeactivate(product)"
+                                [loading]="isDeactivating(product.id)"
+                                [disabled]="isDeactivating(product.id)"
+                            ></button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage
+                ><tr>
+                    <td colspan="9">
+                        <div class="empty-state">
+                            <i class="pi pi-box"></i>
+                            <p>Filtrelere uygun ürün bulunamadı.</p>
+                        </div>
+                    </td>
+                </tr></ng-template
+            >
+        </p-table>
+        @if (totalCount() > 0) { <p-paginator [first]="(pageNumber() - 1) * pageSize()" [rows]="pageSize()" [totalRecords]="totalCount()" [rowsPerPageOptions]="pageSizeOptions" (onPageChange)="onPageChange($event)" /> }
+    </section>
+</section>
+
+<p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [header]="dialogMode() === 'create' ? 'Yeni Ürün' : 'Ürünü Düzenle'"
+    [modal]="true"
+    [style]="{ width: '44rem', maxWidth: 'calc(100vw - 2rem)' }"
+    [closable]="!isSaving()"
+    [closeOnEscape]="!isSaving()"
+    appendTo="body"
+>
+    @if (isDetailLoading()) {
+    <div class="dialog-loading" role="status">
+        <p-progress-spinner ariaLabel="Ürün detayı yükleniyor" strokeWidth="4" />
+        <p>Ürün bilgileri yükleniyor.</p>
+    </div>
+    } @else { @if (dialogErrors().length) {
+    <div class="dialog-errors" role="alert">
+        @for (error of dialogErrors(); track $index) {
+        <p>{{ error }}</p>
+        }
+    </div>
+    }
+    <form id="product-form" class="product-form" [formGroup]="productForm" (ngSubmit)="saveProduct()">
+        <div class="field full">
+            <label for="product-name">Ürün adı *</label><input id="product-name" pInputText formControlName="name" maxlength="150" />@if (productForm.controls.name.touched && productForm.controls.name.invalid) {
+            <small>Ürün adı zorunludur ve en fazla 150 karakter olabilir.</small> }
+        </div>
+        <div class="field full">
+            <label for="description">Açıklama</label><textarea id="description" pTextarea formControlName="description" rows="4" maxlength="1000"></textarea>@if (productForm.controls.description.touched && productForm.controls.description.invalid) {
+            <small>Açıklama en fazla 1000 karakter olabilir.</small> }
+        </div>
+        <div class="field">
+            <label for="product-brand">Marka *</label><input id="product-brand" pInputText formControlName="brand" maxlength="100" />@if (productForm.controls.brand.touched && productForm.controls.brand.invalid) {
+            <small>Marka zorunludur ve en fazla 100 karakter olabilir.</small> }
+        </div>
+        <div class="field">
+            <label for="product-category">Kategori *</label><p-select inputId="product-category" formControlName="categoryId" [options]="categories()" optionLabel="name" optionValue="id" placeholder="Kategori seçin" appendTo="body" />@if
+            (productForm.controls.categoryId.touched && productForm.controls.categoryId.invalid) { <small>Kategori seçmelisiniz.</small> }
+        </div>
+        <div class="field">
+            <label for="product-price">Fiyat *</label><p-inputnumber inputId="product-price" formControlName="price" mode="currency" currency="TRY" locale="tr-TR" [minFractionDigits]="2" [min]="0.01" />@if (productForm.controls.price.touched &&
+            productForm.controls.price.invalid) { <small>Fiyat sıfırdan büyük olmalıdır.</small> }
+        </div>
+        <div class="field">
+            <label for="product-stock">Stok *</label><p-inputnumber inputId="product-stock" formControlName="stock" [min]="0" [useGrouping]="false" />@if (productForm.controls.stock.touched && productForm.controls.stock.invalid) {
+            <small>Stok sıfır veya daha büyük olmalıdır.</small> }
+        </div>
+        <div class="field full">
+            <label for="image-url">Görsel URL</label><input id="image-url" pInputText formControlName="imageUrl" maxlength="2048" placeholder="https://..." />@if (productForm.controls.imageUrl.touched && productForm.controls.imageUrl.invalid) {
+            <small>HTTP veya HTTPS ile başlayan geçerli bir URL girin.</small> }
+        </div>
+        @if (dialogMode() === 'edit') {
+        <div class="active-control"><p-checkbox inputId="is-active" formControlName="isActive" [binary]="true" /><label for="is-active">Ürün aktif</label></div>
+        }
+    </form>
+    }
+    <ng-template #footer
+        ><button pButton type="button" label="Vazgeç" severity="secondary" [text]="true" (click)="dialogVisible.set(false)" [disabled]="isSaving()"></button
+        ><button pButton type="submit" form="product-form" [label]="dialogMode() === 'create' ? 'Ürün Oluştur' : 'Değişiklikleri Kaydet'" icon="pi pi-check" [loading]="isSaving()" [disabled]="isSaving() || isDetailLoading()"></button
+    ></ng-template>
+</p-dialog>

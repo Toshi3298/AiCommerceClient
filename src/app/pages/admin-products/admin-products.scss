@@ -1,0 +1,197 @@
+:host {
+    display: block;
+}
+.admin-products {
+    display: grid;
+    gap: 1.5rem;
+}
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+.page-header h1 {
+    margin: 0.25rem 0 0;
+    color: var(--text-color);
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+}
+.page-header p {
+    margin: 0.5rem 0 0;
+    color: var(--text-color-secondary);
+}
+.kicker {
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.filter-card,
+.table-card {
+    border: 1px solid var(--surface-border);
+    border-radius: var(--content-border-radius);
+    background: var(--surface-card);
+}
+.filter-card {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.25rem;
+}
+.field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+.field label {
+    color: var(--text-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+.field small {
+    color: var(--p-red-500);
+}
+.field :is(input, textarea, p-select, p-inputnumber),
+.field :is(.p-select, .p-inputnumber, .p-inputtext) {
+    width: 100%;
+}
+.search-field {
+    grid-column: span 2;
+}
+.filter-actions {
+    display: flex;
+    align-items: end;
+    gap: 0.5rem;
+    grid-column: span 2;
+}
+.table-card {
+    overflow: hidden;
+}
+.table-card p-table {
+    display: block;
+    overflow-x: auto;
+}
+.product-thumb {
+    width: 4rem;
+    height: 4rem;
+    overflow: hidden;
+    border-radius: 0.6rem;
+    background: var(--surface-ground);
+}
+.product-thumb app-product-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.product-name {
+    display: block;
+    min-width: 11rem;
+    max-width: 18rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.row-actions {
+    display: flex;
+    min-width: max-content;
+    gap: 0.5rem;
+}
+.error-panel {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--p-red-500) 35%, var(--surface-border));
+    border-radius: var(--content-border-radius);
+    background: color-mix(in srgb, var(--p-red-500) 8%, var(--surface-card));
+    color: var(--text-color);
+}
+.error-panel > i {
+    color: var(--p-red-500);
+    font-size: 1.4rem;
+}
+.error-panel div {
+    flex: 1;
+}
+.error-panel p,
+.dialog-errors p {
+    margin: 0.2rem 0;
+}
+.empty-state,
+.dialog-loading {
+    display: flex;
+    min-height: 12rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    color: var(--text-color-secondary);
+    text-align: center;
+}
+.empty-state i {
+    font-size: 2rem;
+}
+.empty-state p,
+.dialog-loading p {
+    margin: 0;
+}
+.product-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+.product-form .full {
+    grid-column: 1 / -1;
+}
+.product-form textarea {
+    resize: vertical;
+}
+.active-control {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    grid-column: 1 / -1;
+    color: var(--text-color);
+}
+.dialog-errors {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--content-border-radius);
+    background: color-mix(in srgb, var(--p-red-500) 9%, var(--surface-card));
+    color: var(--p-red-500);
+}
+@media (max-width: 1100px) {
+    .filter-card {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .search-field {
+        grid-column: span 1;
+    }
+}
+@media (max-width: 700px) {
+    .page-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .filter-card,
+    .product-form {
+        grid-template-columns: 1fr;
+    }
+    .filter-actions,
+    .product-form .full {
+        grid-column: auto;
+    }
+    .filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .error-panel {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .row-actions {
+        flex-direction: column;
+    }
+}
