@@ -20,6 +20,7 @@ import { About } from './app/pages/about/about';
 import { Contact } from './app/pages/contact/contact';
 import { adminGuard } from './app/core/guards/admin.guard';
 import { AdminProducts } from './app/pages/admin-products/admin-products';
+import { AdminCategories } from './app/pages/admin-categories/admin-categories';
 
 export const appRoutes: Routes = [
     { path: '', component: StoreHome },
@@ -47,6 +48,7 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'products', component: AdminProducts },
+            { path: 'categories', component: AdminCategories },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

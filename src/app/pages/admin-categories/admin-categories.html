@@ -1,0 +1,116 @@
+<p-toast />
+<p-confirmdialog />
+
+<section class="admin-categories" aria-labelledby="categories-title">
+    <header class="page-header">
+        <div>
+            <span class="kicker">Yönetim</span>
+            <h1 id="categories-title">Kategoriler</h1>
+            <p>Ürün kataloğunda kullanılan kategorileri yönetin.</p>
+        </div>
+        <button pButton type="button" label="Yeni Kategori" icon="pi pi-plus" (click)="openCreateDialog()"></button>
+    </header>
+
+    <div class="toolbar-card">
+        <label for="category-search">Kategori ara</label>
+        <div class="search-control">
+            <i class="pi pi-search"></i>
+            <input id="category-search" pInputText type="search" placeholder="İsim veya açıklama" [value]="searchTerm()" (input)="updateSearch($event)" />
+        </div>
+        <span>{{ filteredCategories().length }} kategori</span>
+    </div>
+
+    @if (listErrors().length) {
+    <div class="error-panel" role="alert">
+        <i class="pi pi-exclamation-circle"></i>
+        <div>
+            @for (error of listErrors(); track $index) {
+            <p>{{ error }}</p>
+            }
+        </div>
+        <button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" size="small" (click)="loadCategories()" [disabled]="isLoading()"></button>
+    </div>
+    }
+
+    <section class="table-card" aria-label="Kategori listesi">
+        <p-table [value]="filteredCategories()" [loading]="isLoading()" dataKey="id" responsiveLayout="scroll" [rowHover]="true">
+            <ng-template #header>
+                <tr>
+                    <th>Kategori ID</th>
+                    <th>Kategori Adı</th>
+                    <th>Açıklama</th>
+                    <th>İşlemler</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-category>
+                <tr>
+                    <td><strong>#{{ category.id }}</strong></td>
+                    <td><strong class="category-name">{{ category.name }}</strong></td>
+                    <td><span class="description">{{ category.description || 'Açıklama bulunmuyor.' }}</span></td>
+                    <td>
+                        <div class="row-actions">
+                            <button pButton type="button" label="Düzenle" icon="pi pi-pencil" size="small" [outlined]="true" (click)="openEditDialog(category)" [disabled]="isDeleting(category.id)"></button>
+                            <button
+                                pButton
+                                type="button"
+                                label="Sil"
+                                icon="pi pi-trash"
+                                size="small"
+                                severity="danger"
+                                [outlined]="true"
+                                (click)="confirmDelete(category)"
+                                [loading]="isDeleting(category.id)"
+                                [disabled]="isDeleting(category.id)"
+                            ></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+                <tr>
+                    <td colspan="4">
+                        <div class="empty-state">
+                            <i class="pi pi-tags"></i>
+                            <p>{{ searchTerm().trim() ? 'Aramanızla eşleşen kategori bulunamadı.' : 'Henüz kategori bulunmuyor.' }}</p>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </section>
+</section>
+
+<p-dialog
+    [visible]="dialogVisible()"
+    (visibleChange)="dialogVisible.set($event)"
+    [header]="dialogMode() === 'create' ? 'Yeni Kategori' : 'Kategoriyi Düzenle'"
+    [modal]="true"
+    [style]="{ width: '36rem', maxWidth: 'calc(100vw - 2rem)' }"
+    [closable]="!isSaving()"
+    [closeOnEscape]="!isSaving()"
+    appendTo="body"
+>
+    @if (dialogErrors().length) {
+    <div class="dialog-errors" role="alert">
+        @for (error of dialogErrors(); track $index) {
+        <p>{{ error }}</p>
+        }
+    </div>
+    }
+    <form id="category-form" class="category-form" [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+        <div class="field">
+            <div class="field-heading"><label for="category-name">Kategori adı *</label><span>{{ categoryForm.controls.name.value.length }}/150</span></div>
+            <input id="category-name" pInputText formControlName="name" maxlength="150" />
+            @if (categoryForm.controls.name.touched && categoryForm.controls.name.invalid) { <small>Kategori adı zorunludur ve en fazla 150 karakter olabilir.</small> }
+        </div>
+        <div class="field">
+            <div class="field-heading"><label for="category-description">Açıklama</label><span>{{ categoryForm.controls.description.value.length }}/500</span></div>
+            <textarea id="category-description" pTextarea formControlName="description" rows="6" maxlength="500"></textarea>
+            @if (categoryForm.controls.description.touched && categoryForm.controls.description.invalid) { <small>Açıklama en fazla 500 karakter olabilir.</small> }
+        </div>
+    </form>
+    <ng-template #footer>
+        <button pButton type="button" label="Vazgeç" severity="secondary" [text]="true" (click)="dialogVisible.set(false)" [disabled]="isSaving()"></button>
+        <button pButton type="submit" form="category-form" [label]="dialogMode() === 'create' ? 'Kategori Oluştur' : 'Değişiklikleri Kaydet'" icon="pi pi-check" [loading]="isSaving()" [disabled]="isSaving()"></button>
+    </ng-template>
+</p-dialog>
