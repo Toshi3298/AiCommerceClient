@@ -1,5 +1,14 @@
 @if (imageUrl && !imageFailed) {
-    <img [src]="imageUrl" [alt]="alt" [class.loaded]="imageLoaded" (load)="onLoad()" (error)="onError()" />
+    <img
+        class="product-image__image"
+        [src]="imageUrl"
+        [alt]="alt"
+        [class.loaded]="imageLoaded"
+        [class.product-image__image--contain]="fit === 'contain'"
+        [class.product-image__image--cover]="fit === 'cover'"
+        (load)="onLoad()"
+        (error)="onError()"
+    />
 }
 @if (!imageUrl || imageFailed || !imageLoaded) {
     <span class="placeholder" role="img" [attr.aria-label]="alt || 'Ürün görseli bulunmuyor'">

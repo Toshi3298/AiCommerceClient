@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, HostBinding, Input, OnChanges } from '@angular/core';
 
 @Component({
     selector: 'app-product-image',
@@ -9,9 +9,20 @@ import { Component, Input, OnChanges } from '@angular/core';
 export class ProductImage implements OnChanges {
     @Input() imageUrl: string | null = null;
     @Input() alt = '';
+    @Input() fit: 'contain' | 'cover' = 'contain';
 
     imageLoaded = false;
     imageFailed = false;
+
+    @HostBinding('class.product-image--contain')
+    get containClass(): boolean {
+        return this.fit === 'contain';
+    }
+
+    @HostBinding('class.product-image--cover')
+    get coverClass(): boolean {
+        return this.fit === 'cover';
+    }
 
     ngOnChanges(): void {
         this.imageLoaded = false;

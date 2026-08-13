@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -13,6 +13,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
 import { ProductImage } from '../../shared/product-image/product-image';
+import { ProductQuickView } from '../../shared/product-quick-view/product-quick-view';
 
 type StockFilter = 'all' | 'true' | 'false';
 type SortOption = 'name-asc' | 'name-desc' | 'price-asc' | 'price-desc' | 'stock-asc' | 'stock-desc' | 'createdat-desc' | 'createdat-asc';
@@ -32,11 +33,12 @@ const SORT_VALUES: Record<SortOption, Pick<ProductFilter, 'sortBy' | 'sortDirect
 @Component({
     selector: 'app-products',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, ProgressSpinnerModule, ProductImage],
+    imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonModule, InputTextModule, ProgressSpinnerModule, ProductImage, ProductQuickView],
     templateUrl: './products.html',
     styleUrl: './products.scss'
 })
 export class Products implements OnInit {
+    @ViewChild(ProductQuickView) private quickView?: ProductQuickView;
     readonly categories = signal<Category[]>([]);
     readonly result = signal<ProductListResponseData | null>(null);
     readonly isLoading = signal(false);
@@ -161,6 +163,13 @@ export class Products implements OnInit {
 
     isAdding(productId: number): boolean {
         return this.addingProductIds().has(productId);
+    }
+
+    openQuickView(productId: number, event: MouseEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+        const opener = event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+        this.quickView?.open(productId, opener);
     }
 
     private createFilter(pageNumber: number): ProductFilter {

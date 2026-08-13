@@ -1,0 +1,24 @@
+<p-dialog [visible]="visible()" (visibleChange)="visibleChanged($event)" (onShow)="focusDialog()" header="Hızlı İncele" [modal]="true" [dismissableMask]="true" [style]="{ width: '56rem', maxWidth: 'calc(100vw - 2rem)' }" [breakpoints]="{ '640px': 'calc(100vw - 1rem)' }" appendTo="body">
+    <div #dialogFocusTarget class="quick-view" tabindex="-1">
+        @if (isLoading()) {
+            <div class="state-panel" role="status"><p-progress-spinner ariaLabel="Ürün yükleniyor" strokeWidth="4" /><h2>Ürün yükleniyor</h2><p>Ürün bilgileri hazırlanıyor.</p></div>
+        } @else if (notFound()) {
+            <div class="state-panel"><span class="state-icon"><i class="pi pi-search"></i></span><h2>Ürün bulunamadı</h2><p>Bu ürün kaldırılmış veya artık mevcut olmayabilir.</p></div>
+        } @else if (loadErrors().length) {
+            <div class="state-panel"><span class="state-icon error"><i class="pi pi-exclamation-circle"></i></span><h2>Ürün yüklenemedi</h2>@for (error of loadErrors(); track $index) { <p>{{ error }}</p> }<button pButton type="button" label="Tekrar Dene" icon="pi pi-refresh" (click)="retry()"></button></div>
+        } @else if (product(); as item) {
+            <div class="quick-view-grid">
+                <div class="product-visual"><app-product-image [imageUrl]="item.imageUrl" [alt]="item.name" fit="contain" /></div>
+                <article class="product-info">
+                    <span class="brand">{{ item.brand }}</span><h2>{{ item.name }}</h2><strong class="price">{{ item.price | currency: 'TRY' : 'symbol-narrow' : '1.2-2' : 'tr-TR' }}</strong><p class="description">{{ item.description }}</p>
+                    <dl><div><dt>Marka</dt><dd>{{ item.brand }}</dd></div><div><dt>Kategori</dt><dd>{{ item.categoryName }}</dd></div><div><dt>Stok</dt><dd>{{ item.stock }} adet</dd></div><div><dt>Durum</dt><dd>{{ item.isActive ? 'Aktif' : 'Pasif' }}</dd></div></dl>
+                    @if (cartErrors().length) { <div class="message error-message" role="alert"><i class="pi pi-exclamation-circle"></i><div>@for (error of cartErrors(); track $index) { <p>{{ error }}</p> }</div></div> }
+                    @if (successMessage()) { <div class="message success-message" role="status"><i class="pi pi-check-circle"></i><p>{{ successMessage() }}</p></div> }
+                    <div class="purchase-row"><div class="quantity-control" aria-label="Ürün miktarı"><button type="button" aria-label="Miktarı azalt" (click)="decreaseQuantity()" [disabled]="quantity() <= 1 || isAdding()"><i class="pi pi-minus"></i></button><span aria-live="polite">{{ quantity() }}</span><button type="button" aria-label="Miktarı artır" (click)="increaseQuantity()" [disabled]="quantity() >= item.stock || !canAddToCart(item) || isAdding()"><i class="pi pi-plus"></i></button></div><button pButton type="button" label="Sepete Ekle" icon="pi pi-shopping-cart" (click)="addToCart()" [loading]="isAdding()" [disabled]="isAdding() || !canAddToCart(item)"></button></div>
+                    @if (!canAddToCart(item)) { <p class="unavailable-note">Bu ürün şu anda sepete eklenemiyor.</p> }
+                    <button type="button" class="detail-link" (click)="openDetails()">Detaylı İncele <i class="pi pi-arrow-right"></i></button>
+                </article>
+            </div>
+        }
+    </div>
+</p-dialog>
