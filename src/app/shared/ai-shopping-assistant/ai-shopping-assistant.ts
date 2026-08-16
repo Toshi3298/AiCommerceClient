@@ -110,7 +110,7 @@ export class AiShoppingAssistant implements AfterViewChecked {
         this.form.reset({ prompt: '' });
         this.isLoading.set(true);
 
-        this.aiSearchService.searchProducts({ prompt })
+        this.aiSearchService.filterSearch({ prompt })
             .pipe(finalize(() => this.isLoading.set(false)), takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: (response) => {
@@ -120,7 +120,7 @@ export class AiShoppingAssistant implements AfterViewChecked {
                         return;
                     }
                     if (!response.data.products.length) {
-                        this.appendMessage(this.createMessage('assistant', 'Bu isteğe uygun bir ürün bulamadım. Aramanı farklı kelimelerle tekrar deneyebilirsin.'));
+                        this.appendMessage(this.createMessage('assistant', 'Aradığın kriterlere uygun ürün bulamadım. Filtrelerini değiştirerek tekrar deneyebilirsin.'));
                         return;
                     }
                     this.appendMessage(this.createMessage('assistant', 'İsteğine uygun ürünleri buldum.', response.data.products));
