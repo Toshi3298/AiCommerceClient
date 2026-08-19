@@ -7,8 +7,9 @@ import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { finalize } from 'rxjs';
 import { ApiResponse } from '../../core/models/api-response';
+import { BiaChatResponseData } from '../../core/models/bia-agent.models';
 import { Product } from '../../core/models/product.models';
-import { AiSearchService } from '../../core/services/ai-search.service';
+import { BiaAgentService } from '../../core/services/bia-agent.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { ProductImage } from '../product-image/product-image';
@@ -19,6 +20,10 @@ interface ChatMessage {
     text: string;
     products?: Product[];
     loading?: boolean;
+    requiresAuthentication?: boolean;
+    requiresConfirmation?: boolean;
+    confirmationResolved?: boolean;
+    confirmationLoading?: boolean;
 }
 
 const WELCOME_MESSAGE = 'Merhaba, ben Bia. Aradığın ürünü doğal dille tarif et, sana uygun seçenekleri bulayım.';
@@ -32,7 +37,7 @@ const WELCOME_MESSAGE = 'Merhaba, ben Bia. Aradığın ürünü doğal dille tar
 })
 export class AiShoppingAssistant implements AfterViewChecked {
     private readonly formBuilder = inject(FormBuilder);
-    private readonly aiSearchService = inject(AiSearchService);
+    private readonly biaAgentService = inject(BiaAgentService);
     private readonly cartService = inject(CartService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
@@ -46,14 +51,10 @@ export class AiShoppingAssistant implements AfterViewChecked {
 
     readonly isOpen = signal(false);
     readonly isLoading = signal(false);
+    readonly conversationId = signal<string | null>(null);
     readonly messages = signal<ChatMessage[]>([this.createMessage('assistant', WELCOME_MESSAGE)]);
     readonly addingProductIds = signal<ReadonlySet<number>>(new Set<number>());
-    readonly examples = [
-        '20.000 TL altındaki telefonları getir',
-        'Stokta bulunan kitapları göster',
-        'En ucuz Samsung telefonları bul',
-        'Spor ürünlerini fiyatına göre sırala'
-    ];
+    readonly examples = ['20.000 TL altındaki telefonları getir', 'Stokta bulunan kitapları göster', 'En ucuz Samsung telefonları bul', 'Spor ürünlerini fiyatına göre sırala'];
     readonly form = this.formBuilder.group({
         prompt: this.formBuilder.nonNullable.control('', [Validators.required, Validators.minLength(3), Validators.maxLength(500)])
     });
@@ -80,6 +81,7 @@ export class AiShoppingAssistant implements AfterViewChecked {
         if (this.isLoading()) return;
         this.messages.set([this.createMessage('assistant', WELCOME_MESSAGE)]);
         this.form.reset({ prompt: '' });
+        this.conversationId.set(null);
         this.requestScroll();
         setTimeout(() => this.promptInput?.nativeElement.focus());
     }
@@ -103,48 +105,31 @@ export class AiShoppingAssistant implements AfterViewChecked {
         this.promptControl.markAsTouched();
         this.promptControl.updateValueAndValidity();
         if (this.form.invalid) return;
-
-        this.appendMessage(this.createMessage('user', prompt));
-        const loadingMessage = this.createMessage('assistant', 'Bia ürünleri araştırıyor…', undefined, true);
-        this.appendMessage(loadingMessage);
         this.form.reset({ prompt: '' });
-        this.isLoading.set(true);
+        this.sendAgentMessage(prompt);
+    }
 
-        this.aiSearchService.filterSearch({ prompt })
-            .pipe(finalize(() => this.isLoading.set(false)), takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-                next: (response) => {
-                    this.removeMessage(loadingMessage.id);
-                    if (!response.success || !response.data || !Array.isArray(response.data.products)) {
-                        this.appendMessage(this.createMessage('assistant', this.responseErrors(response).join(' ')));
-                        return;
-                    }
-                    if (!response.data.products.length) {
-                        this.appendMessage(this.createMessage('assistant', 'Aradığın kriterlere uygun ürün bulamadım. Filtrelerini değiştirerek tekrar deneyebilirsin.'));
-                        return;
-                    }
-                    this.appendMessage(this.createMessage('assistant', 'İsteğine uygun ürünleri buldum.', response.data.products));
-                },
-                error: (error: HttpErrorResponse) => {
-                    this.removeMessage(loadingMessage.id);
-                    const message = error.status === 400
-                        ? this.responseErrors((error.error ?? {}) as Partial<ApiResponse<unknown>>).join(' ')
-                        : 'Bia şu anda yanıt veremiyor. Backend ve Ollama servislerinin çalıştığını kontrol edip tekrar deneyin.';
-                    this.appendMessage(this.createMessage('assistant', message));
-                }
-            });
+    respondToConfirmation(chatMessageId: number, confirmed: boolean): void {
+        if (this.isLoading()) return;
+        const confirmation = this.messages().find((message) => message.id === chatMessageId);
+        if (!confirmation?.requiresConfirmation || confirmation.confirmationResolved || confirmation.confirmationLoading) return;
+        this.updateMessage(chatMessageId, { confirmationLoading: true });
+        this.sendAgentMessage(confirmed ? 'Evet, sepete ekle' : 'Hayır, iptal et', chatMessageId);
+    }
+
+    navigateToLogin(): void {
+        const currentUrl = this.router.url;
+        const returnUrl = currentUrl.startsWith('/') && !currentUrl.startsWith('//') ? currentUrl : '/';
+        this.close();
+        void this.router.navigate(['/login'], { queryParams: { returnUrl } });
     }
 
     addToCart(product: Product): void {
         if (this.isAdding(product.id) || product.stock <= 0 || !product.isActive) return;
         if (!this.authService.hasToken()) {
-            const currentUrl = this.router.url;
-            const returnUrl = currentUrl.startsWith('/') && !currentUrl.startsWith('//') ? currentUrl : '/';
-            this.close();
-            void this.router.navigate(['/login'], { queryParams: { returnUrl } });
+            this.navigateToLogin();
             return;
         }
-
         this.setAdding(product.id, true);
         this.cartService.addItem({ productId: product.id, quantity: 1 })
             .pipe(finalize(() => this.setAdding(product.id, false)), takeUntilDestroyed(this.destroyRef))
@@ -163,8 +148,42 @@ export class AiShoppingAssistant implements AfterViewChecked {
     @HostListener('document:keydown.escape')
     closeWithEscape(): void { if (this.isOpen()) this.close(); }
 
+    private sendAgentMessage(message: string, confirmationMessageId?: number): void {
+        if (this.isLoading()) return;
+        this.appendMessage(this.createMessage('user', message));
+        const loadingMessage = this.createMessage('assistant', 'Bia isteğini değerlendiriyor…', undefined, true);
+        this.appendMessage(loadingMessage);
+        this.isLoading.set(true);
+        this.biaAgentService.chat({ message, conversationId: this.conversationId() })
+            .pipe(finalize(() => {
+                this.isLoading.set(false);
+                if (confirmationMessageId !== undefined) this.updateMessage(confirmationMessageId, { confirmationLoading: false });
+            }), takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (response) => {
+                    this.removeMessage(loadingMessage.id);
+                    if (!response.success || !response.data) {
+                        this.appendMessage(this.createMessage('assistant', this.responseErrors(response).join(' ')));
+                        return;
+                    }
+                    this.conversationId.set(response.data.conversationId);
+                    if (confirmationMessageId !== undefined) this.updateMessage(confirmationMessageId, { confirmationResolved: true });
+                    this.appendMessage(this.createAgentResponseMessage(response.data));
+                },
+                error: (error: HttpErrorResponse) => {
+                    this.removeMessage(loadingMessage.id);
+                    this.appendMessage(this.createMessage('assistant', this.agentErrorMessage(error)));
+                }
+            });
+    }
+
     private createMessage(role: ChatMessage['role'], text: string, products?: Product[], loading = false): ChatMessage {
         return { id: this.messageId++, role, text, products, loading };
+    }
+
+    private createAgentResponseMessage(data: BiaChatResponseData): ChatMessage {
+        const products = data.product ? [data.product] : data.products;
+        return { ...this.createMessage('assistant', data.message, products), requiresAuthentication: data.requiresAuthentication, requiresConfirmation: data.requiresConfirmation, confirmationResolved: false, confirmationLoading: false };
     }
 
     private appendMessage(message: ChatMessage): void {
@@ -176,10 +195,19 @@ export class AiShoppingAssistant implements AfterViewChecked {
         this.messages.update((messages) => messages.filter((message) => message.id !== id));
     }
 
+    private updateMessage(id: number, changes: Partial<ChatMessage>): void {
+        this.messages.update((messages) => messages.map((message) => message.id === id ? { ...message, ...changes } : message));
+    }
+
     private requestScroll(): void { this.shouldScroll = true; }
 
     private responseErrors(response: Partial<ApiResponse<unknown>>): string[] {
         return response.errors?.length ? response.errors : [response.message || 'İşlem tamamlanamadı. Lütfen tekrar deneyin.'];
+    }
+
+    private agentErrorMessage(error: HttpErrorResponse): string {
+        if (error.status !== 0 && error.error && typeof error.error === 'object') return this.responseErrors(error.error as Partial<ApiResponse<unknown>>).join(' ');
+        return 'Bia şu anda yanıt veremiyor. Backend ve Ollama servislerinin çalıştığını kontrol edip tekrar deneyin.';
     }
 
     private setAdding(productId: number, adding: boolean): void {
