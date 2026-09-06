@@ -3,11 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { CreateOrderRequest, CreateOrderResponseData, OrderDetail, OrderSummary } from '../models/order.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api/orders';
+    private readonly apiUrl = `${environment.apiBaseUrl}/orders`;
 
     createOrder(request: CreateOrderRequest): Observable<ApiResponse<CreateOrderResponseData>> {
         return this.http.post<ApiResponse<CreateOrderResponseData>>(this.apiUrl, request);

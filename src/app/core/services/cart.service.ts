@@ -10,11 +10,12 @@ import {
     UpdateCartItemRequest,
     UpdateCartItemResponseData
 } from '../models/cart.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api/cart';
+    private readonly apiUrl = `${environment.apiBaseUrl}/cart`;
 
     getCart(): Observable<ApiResponse<CartResponseData>> {
         return this.http.get<ApiResponse<CartResponseData>>(this.apiUrl);

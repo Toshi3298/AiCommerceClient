@@ -3,11 +3,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { CurrentUser, LoginRequest, LoginResponseData, RegisterRequest, RegisterResponseData } from '../models/auth.models';
-
+import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api/auth';
+    private readonly apiUrl = '${environment.apiBaseUrl}/auth';
 
     register(request: RegisterRequest): Observable<ApiResponse<RegisterResponseData>> {
         return this.http.post<ApiResponse<RegisterResponseData>>(`${this.apiUrl}/register`, request);

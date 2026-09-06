@@ -3,11 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdminCategory, CreateCategoryRequest, CreateCategoryResponseData, UpdateCategoryRequest } from '../models/admin-category.models';
 import { ApiResponse } from '../models/api-response';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminCategoryService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api/categories';
+    private readonly apiUrl = `${environment.apiBaseUrl}/categories`;
 
     getCategories(): Observable<ApiResponse<AdminCategory[]>> {
         return this.http.get<ApiResponse<AdminCategory[]>>(this.apiUrl);

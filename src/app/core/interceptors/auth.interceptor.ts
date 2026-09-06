@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-
-const API_URL = 'http://localhost:5041/api';
+import { environment } from '../../../environments/environment';
+const API_URL = environment.apiBaseUrl;
 const PUBLIC_AUTH_ENDPOINTS = [`${API_URL}/auth/login`, `${API_URL}/auth/register`];
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
