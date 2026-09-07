@@ -4,13 +4,17 @@ import { Observable } from 'rxjs';
 import { AdminProductFilter, CreateProductRequest, CreateProductResponseData, UpdateProductRequest } from '../models/admin-product.models';
 import { ApiResponse } from '../models/api-response';
 import { Category, Product, ProductListResponseData } from '../models/product.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminProductService {
     private readonly http = inject(HttpClient);
-    private readonly adminProductsUrl = 'http://localhost:5041/api/admin/products';
-    private readonly productsUrl = 'http://localhost:5041/api/products';
-    private readonly categoriesUrl = 'http://localhost:5041/api/categories';
+    private readonly adminProductsUrl =
+        `${environment.apiBaseUrl}/admin/products`;
+    private readonly productsUrl =
+        `${environment.apiBaseUrl}/admin/products`;
+    private readonly categoriesUrl =
+        `${environment.apiBaseUrl}/admin/products`;
 
     getProducts(filter: AdminProductFilter): Observable<ApiResponse<ProductListResponseData>> {
         let params = new HttpParams().set('sortBy', filter.sortBy).set('sortDirection', filter.sortDirection).set('pageNumber', filter.pageNumber).set('pageSize', filter.pageSize);

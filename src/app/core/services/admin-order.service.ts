@@ -3,11 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AdminOrderDetail, AdminOrdersFilter, AdminOrdersPagedData, UpdateAdminOrderStatusRequest, UpdateAdminOrderStatusResponseData } from '../models/admin-order.models';
 import { ApiResponse } from '../models/api-response';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AdminOrderService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api/admin/orders';
+    private readonly apiUrl = `${environment.apiBaseUrl}/admin/orders`;
 
     getOrders(filter: AdminOrdersFilter): Observable<ApiResponse<AdminOrdersPagedData>> {
         let params = new HttpParams().set('pageNumber', filter.pageNumber).set('pageSize', filter.pageSize);

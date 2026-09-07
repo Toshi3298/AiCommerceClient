@@ -3,11 +3,11 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response';
 import { Category, Product, ProductFilter, ProductListResponseData } from '../models/product.models';
-
+import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = 'http://localhost:5041/api';
+    private readonly apiUrl = environment.apiBaseUrl;
 
     getProducts(filter: ProductFilter): Observable<ApiResponse<ProductListResponseData>> {
         let params = new HttpParams()
